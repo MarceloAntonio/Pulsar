@@ -478,7 +478,7 @@ impl NetworkManager {
             let mut connection: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
             connection.insert("type", "802-11-wireless".into());
             connection.insert("id", ssid.into());
-            connection.insert("uuid", zbus::zvariant::Value::Str(uuid::Uuid::new_v4().to_string().into()));
+            connection.insert("uuid", zbus::zvariant::Value::Str(std::fs::read_to_string("/proc/sys/kernel/random/uuid").unwrap_or_default().trim().to_string().into()));
             connection.insert("autoconnect", true.into());
             
             let mut wireless: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
@@ -534,7 +534,7 @@ impl NetworkManager {
         let mut connection: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
         connection.insert("type", "802-11-wireless".into());
         connection.insert("id", ssid.into());
-        connection.insert("uuid", zbus::zvariant::Value::Str(uuid::Uuid::new_v4().to_string().into()));
+        connection.insert("uuid", zbus::zvariant::Value::Str(std::fs::read_to_string("/proc/sys/kernel/random/uuid").unwrap_or_default().trim().to_string().into()));
         connection.insert("autoconnect", true.into());
         
         let mut wireless: HashMap<&str, zbus::zvariant::Value> = HashMap::new();
