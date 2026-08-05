@@ -11,6 +11,7 @@ pub struct NetworkList {
     list_box: gtk::Box,
     scan_button: gtk::Button,
     search_entry: gtk::SearchEntry,
+    power_switch: gtk::Switch,
     networks: Rc<RefCell<Vec<AccessPoint>>>,
     row_actions: Rc<RefCell<HashMap<String, gtk::Box>>>,
     on_connect: Rc<RefCell<Option<Rc<dyn Fn(AccessPoint)>>>>,
@@ -77,6 +78,13 @@ impl NetworkList {
 
         search_box.append(&search_entry);
         container.append(&search_box);
+
+        let power_switch = gtk::Switch::builder()
+            .css_classes(["orbit-toggle-switch"])
+            .active(false)
+            .sensitive(false)
+            .valign(gtk::Align::Center)
+            .build();
         
         let scrolled = gtk::ScrolledWindow::builder()
             .vexpand(true)
@@ -127,6 +135,7 @@ impl NetworkList {
             list_box,
             scan_button,
             search_entry: search_entry.clone(),
+            power_switch,
             networks: Rc::new(RefCell::new(Vec::new())),
             row_actions: Rc::new(RefCell::new(HashMap::new())),
             on_connect: Rc::new(RefCell::new(None)),
@@ -162,6 +171,15 @@ impl NetworkList {
         
         list.show_loading();
         list
+    }
+    
+    pub fn power_switch(&self) -> &gtk::Switch {
+        &self.power_switch
+    }
+    
+    pub fn set_power_state(&self, enabled: bool) {
+        self.power_switch.set_sensitive(true);
+        self.power_switch.set_active(enabled);
     }
     
     fn show_loading(&self) {
@@ -305,18 +323,37 @@ impl NetworkList {
         let connected_networks: Vec<&&AccessPoint> = filtered_networks.iter().filter(|n| n.is_connected).collect();
         let available_networks: Vec<&&AccessPoint> = filtered_networks.iter().filter(|n| !n.is_connected).collect();
         
+        let active_connection_header = gtk::Box::builder()
+            .orientation(Orientation::Horizontal)
+            .hexpand(true)
+            .build();
+            
+        let section_header = gtk::Label::builder()
+            .label("ACTIVE CONNECTION")
+            .css_classes(["orbit-section-header"])
+            .halign(gtk::Align::Start)
+            .hexpand(true)
+            .build();
+            
+        active_connection_header.append(&section_header);
+        
+        let switch_container = gtk::Box::builder()
+            .valign(gtk::Align::Center)
+            .halign(gtk::Align::End)
+            .margin_end(8)
+            .build();
+        switch_container.append(&self.power_switch);
+        active_connection_header.append(&switch_container);
+
         if !connected_networks.is_empty() {
-            let section_header = gtk::Label::builder()
-                .label("ACTIVE CONNECTION")
-                .css_classes(["orbit-section-header"])
-                .halign(gtk::Align::Start)
-                .build();
-            self.list_box.append(&section_header);
+            self.list_box.append(&active_connection_header);
             
             for network in connected_networks {
                 let row = self.create_network_row(network);
                 self.list_box.append(&row);
             }
+        } else {
+            self.list_box.append(&active_connection_header);
         }
         
         if !available_networks.is_empty() {

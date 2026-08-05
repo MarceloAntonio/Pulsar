@@ -6,22 +6,18 @@ use std::rc::Rc;
 
 use crate::config::Config;
 use crate::theme::Theme;
-use super::header::Header;
 use super::network_list::NetworkList;
 use super::device_list::DeviceList;
 use super::saved_networks_list::SavedNetworksList;
-use super::vpn_list::VpnList;
 use crate::dbus::network_manager::{NetworkDetails, WiredProfile};
 
 pub struct OrbitWindow {
     window: ApplicationWindow,
     root_revealer: gtk::Revealer,
     config: Rc<RefCell<Config>>,
-    header: Header,
     network_list: NetworkList,
     saved_networks_list: SavedNetworksList,
     device_list: DeviceList,
-    vpn_list: VpnList,
     stack: gtk::Stack,
     details_revealer: gtk::Revealer,
     details_box: gtk::Box,
@@ -70,11 +66,9 @@ impl Clone for OrbitWindow {
             window: self.window.clone(),
             root_revealer: self.root_revealer.clone(),
             config: self.config.clone(),
-            header: self.header.clone(),
             network_list: self.network_list.clone(),
             saved_networks_list: self.saved_networks_list.clone(),
             device_list: self.device_list.clone(),
-            vpn_list: self.vpn_list.clone(),
             stack: self.stack.clone(),
             details_revealer: self.details_revealer.clone(),
             details_box: self.details_box.clone(),
@@ -165,9 +159,7 @@ impl OrbitWindow {
             .overflow(gtk::Overflow::Hidden)
             .build();
         
-        let header = Header::new();
-        main_box.append(header.widget());
-        
+
         let stack = gtk::Stack::builder()
             .vexpand(true)
             .hexpand(true)
@@ -178,11 +170,8 @@ impl OrbitWindow {
         let network_list = NetworkList::new();
         let saved_networks_list = SavedNetworksList::new();
         let device_list = DeviceList::new();
-        let vpn_list = VpnList::new();
-        
         stack.add_named(network_list.widget(), Some("wifi"));
         stack.add_named(device_list.widget(), Some("bluetooth"));
-        stack.add_named(vpn_list.widget(), Some("vpn"));
         stack.set_visible_child_name("wifi");
         stack.set_size_request(400, 350);
         
@@ -671,11 +660,9 @@ impl OrbitWindow {
             window: window.clone(),
             root_revealer,
             config,
-            header,
             network_list,
             saved_networks_list,
             device_list,
-            vpn_list,
             stack,
             details_revealer,
             details_box,
@@ -848,17 +835,13 @@ impl OrbitWindow {
         &self.device_list
     }
 
-    pub fn vpn_list(&self) -> &VpnList {
-        &self.vpn_list
-    }
+
 
     pub fn saved_networks_list(&self) -> &SavedNetworksList {
         &self.saved_networks_list
     }
     
-    pub fn header(&self) -> &Header {
-        &self.header
-    }
+
     
     pub fn stack(&self) -> &gtk::Stack {
         &self.stack
@@ -1483,7 +1466,7 @@ impl OrbitWindow {
     }
 
     pub fn set_tab(&self, tab_name: &str) {
-        self.header.set_tab(tab_name);
+        // Header is removed, but we update stack directly
         self.stack.set_visible_child_name(tab_name);
     }
 }

@@ -10,7 +10,7 @@ pub mod daemon;
 use crate::config::Config;
 use crate::theme::Theme;
 use crate::dbus::{NetworkManager, BluetoothManager};
-use crate::dbus::network_manager::{AccessPoint, SecurityType, SavedNetwork, NetworkDetails, VpnProfile, WiredProfile};
+use crate::dbus::network_manager::{AccessPoint, SecurityType, SavedNetwork, NetworkDetails, WiredProfile};
 use crate::dbus::bluez::{BluetoothDevice, BluetoothDeviceDetails};
 use crate::ui::{OrbitWindow, DeviceAction};
 use daemon::{DaemonServer, DaemonCommand};
@@ -38,9 +38,7 @@ pub enum AppEvent {
     BtConfirmRequest(String, u32, async_channel::Sender<bool>),
     BtAuthRequest(String, async_channel::Sender<bool>),
     BtAgentCancel,
-    VpnProfilesResult(Vec<VpnProfile>),
     WiredProfilesResult(Vec<WiredProfile>),
-    PublicIpResult(String, String, Vec<String>, bool),
     Error(String),
     Notify(String),
     CaptivePortal(String),
@@ -291,7 +289,7 @@ fn setup_events_receiver(
                         let tab_str = tab.as_str();
                         if tab_str == "wifi" || tab_str == "saved" {
                             log::info!("UI: Syncing WiFi switch to {}", enabled);
-                            win.header().set_power_state(enabled);
+                            win.network_list().set_power_state(enabled);
                         }
                     }
                 }
@@ -302,8 +300,7 @@ fn setup_events_receiver(
                     if let Some(tab) = win.stack().visible_child_name() {
                         let tab_str = tab.as_str();
                         if tab_str == "bluetooth" {
-                            log::info!("UI: Syncing Bluetooth switch to {}", enabled);
-                            win.header().set_power_state(enabled);
+                            log::info!("UI: Syncing Bluetooth switch to {} (no UI switch anymore)", enabled);
 
                             if enabled {
                                 let tx_refresh = tx.clone();
@@ -440,16 +437,10 @@ fn setup_events_receiver(
                 AppEvent::BtAgentCancel => {
                     win.cancel_bt_agent();
                 }
-                AppEvent::VpnProfilesResult(profiles) => {
-                    win.vpn_list().set_profiles(profiles);
-                }
                 AppEvent::WiredProfilesResult(profiles) => {
                     win.show_wired_overlay(&profiles);
                 }
-                AppEvent::PublicIpResult(ip, isp, dns_servers, is_secure) => {
-                    log::info!("App: Updating UI with IP: {}, ISP: {}, DNS: {:?}", ip, isp, dns_servers);
-                    win.vpn_list().set_privacy_info(&ip, &isp, &dns_servers, is_secure);
-                }
+
                 AppEvent::DaemonCommand(cmd) => {
                     match cmd {
                         DaemonCommand::Show => {
@@ -482,9 +473,6 @@ fn setup_events_receiver(
                                     if let Ok(aps) = rt_ref.block_on(async { nm_inst.get_access_points().await }) {
                                         let _ = tx_ref.send_blocking(AppEvent::WifiScanResult(aps));
                                     }
-                                    if let Ok(profiles) = rt_ref.block_on(async { nm_inst.get_vpn_profiles().await }) {
-                                        let _ = tx_ref.send_blocking(AppEvent::VpnProfilesResult(profiles));
-                                    }
 
                                     // Get current DNS
                                     if let Some(ssid) = rt_ref.block_on(async { nm_inst.get_active_ssid().await }) {
@@ -503,14 +491,9 @@ fn setup_events_receiver(
                                         let _ = tx_ref.send_blocking(AppEvent::BtScanResult(devices));
                                     }
                                 }
-
-                                // Trigger IP check
-                                log::info!("App: Fetching public IP info (Show)...");
-                                fetch_public_ip(tx_ref.clone(), current_dns.clone());
                             });
                             }
-                        }
-                        DaemonCommand::Hide => {
+                        }                        DaemonCommand::Hide => {
                             win.hide();
                             *is_visible.borrow_mut() = false;
                         }
@@ -558,9 +541,6 @@ fn setup_events_receiver(
                                         if let Ok(aps) = rt_ref.block_on(async { nm_inst.get_access_points().await }) {
                                             let _ = tx_ref.send_blocking(AppEvent::WifiScanResult(aps));
                                         }
-                                        if let Ok(profiles) = rt_ref.block_on(async { nm_inst.get_vpn_profiles().await }) {
-                                            let _ = tx_ref.send_blocking(AppEvent::VpnProfilesResult(profiles));
-                                        }
 
                                         // Get current DNS
                                         if let Some(ssid) = rt_ref.block_on(async { nm_inst.get_active_ssid().await }) {
@@ -579,14 +559,9 @@ fn setup_events_receiver(
                                             let _ = tx_ref.send_blocking(AppEvent::BtScanResult(devices));
                                         }
                                     }
-
-                                    // Trigger IP check in background with multi-provider fallback
-                                    let tx_ip = tx_ref.clone();
-                                    std::thread::spawn(move || fetch_public_ip(tx_ip, current_dns));
                                 });
                                 }
-                            }
-                        }
+                            }                        }
                         DaemonCommand::ReloadTheme => {
                             let new_theme = Theme::load();
                             *win_theme.borrow_mut() = new_theme;
@@ -617,137 +592,11 @@ fn setup_ui_callbacks(
     bt: Arc<Mutex<Option<BluetoothManager>>>,
     rt: Arc<tokio::runtime::Runtime>,
     tx: async_channel::Sender<AppEvent>,
-    current_tab: Rc<RefCell<String>>,
+    _current_tab: Rc<RefCell<String>>,
     is_switching_pwr: Arc<Mutex<bool>>,
 ) {
-    let header = win.header().clone();
-    let stack = win.stack().clone();
+    let _stack = win.stack().clone();
 
-    // Tab buttons
-    let stack_wifi = stack.clone();
-    let header_wifi = header.clone();
-    let current_tab_wifi = current_tab.clone();
-    let nm_wifi = nm.clone();
-    let rt_wifi = rt.clone();
-    let tx_wifi = tx.clone();
-    let is_switching_wifi = is_switching_pwr.clone();
-    header.wifi_tab().connect_clicked(move |_| {
-        *current_tab_wifi.borrow_mut() = "wifi".to_string();
-        stack_wifi.set_visible_child_name("wifi");
-        header_wifi.set_tab("wifi");
-        let nm = nm_wifi.clone();
-        let rt = rt_wifi.clone();
-        let tx = tx_wifi.clone();
-        let is_switching = is_switching_wifi.clone();
-        std::thread::spawn(move || {
-            let nm_guard = nm.lock().unwrap();
-            if let Some(ref nm_inst) = *nm_guard {
-                if let Ok(enabled) = rt.block_on(async { nm_inst.is_wifi_enabled().await }) {
-                    if !*is_switching.lock().unwrap() {
-                        let _ = tx.send_blocking(AppEvent::WifiPowerState(enabled));
-                    }
-                }
-            }
-        });
-    });
-
-    let stack_bt = stack.clone();
-    let header_bt = header.clone();
-    let current_tab_bt = current_tab.clone();
-    let bt_tab = bt.clone();
-    let rt_bt_tab = rt.clone();
-    let tx_bt_tab = tx.clone();
-    let is_switching_bt_tab = is_switching_pwr.clone();
-    header.bluetooth_tab().connect_clicked(move |_| {
-        *current_tab_bt.borrow_mut() = "bluetooth".to_string();
-        stack_bt.set_visible_child_name("bluetooth");
-        header_bt.set_tab("bluetooth");
-        let bt = bt_tab.clone();
-        let rt = rt_bt_tab.clone();
-        let tx = tx_bt_tab.clone();
-        let is_switching = is_switching_bt_tab.clone();
-        std::thread::spawn(move || {
-            let bt_guard = bt.lock().unwrap();
-            if let Some(ref bt_inst) = *bt_guard {
-                if let Ok(enabled) = rt.block_on(async { bt_inst.is_powered().await }) {
-                    if !*is_switching.lock().unwrap() {
-                        let _ = tx.send_blocking(AppEvent::BtPowerState(enabled));
-                    }
-                }
-            }
-        });
-    });
-
-    let stack_vpn = stack.clone();
-    let header_vpn = header.clone();
-    let current_tab_vpn = current_tab.clone();
-    let nm_vpn_tab = nm.clone();
-    let rt_vpn_tab = rt.clone();
-    let tx_vpn_tab = tx.clone();
-    header.vpn_tab().connect_clicked(move |_| {
-        log::info!("UI: VPN tab button clicked");
-        *current_tab_vpn.borrow_mut() = "vpn".to_string();
-        stack_vpn.set_visible_child_name("vpn");
-        header_vpn.set_tab("vpn");
-        
-        let nm = nm_vpn_tab.clone();
-        let rt = rt_vpn_tab.clone();
-        let tx = tx_vpn_tab.clone();
-        std::thread::spawn(move || {
-            log::info!("App: VPN tab activation thread started");
-            let mut current_dns = Vec::new();
-            let nm_guard = nm.lock().unwrap();
-            if let Some(ref nm_inst) = *nm_guard {
-                match rt.block_on(async { nm_inst.get_vpn_profiles().await }) {
-                    Ok(profiles) => {
-                        log::info!("App: Found {} VPN profiles", profiles.len());
-                        let _ = tx.send_blocking(AppEvent::VpnProfilesResult(profiles));
-                    }
-                    Err(e) => {
-                        log::error!("App: Failed to fetch VPN profiles: {}", e);
-                    }
-                }
-
-                // Get current DNS servers from active connection
-                if let Some(ssid) = rt.block_on(async { nm_inst.get_active_ssid().await }) {
-                    if let Ok(details) = rt.block_on(async { nm_inst.get_network_details(&ssid).await }) {
-                        current_dns.extend(details.ipv4_dns);
-                        current_dns.extend(details.ipv6_dns);
-                    }
-                }
-            }
-            
-            // Fetch public IP info using a more reliable endpoint that avoids Cloudflare challenges
-            log::info!("App: Fetching public IP info (Manual Click)...");
-            fetch_public_ip(tx, current_dns);
-        });
-    });
-
-    let _win_wired_btn = win.clone();
-    let nm_wired_btn = nm.clone();
-    let rt_wired_btn = rt.clone();
-    let tx_wired_btn = tx.clone();
-    header.wired_button().connect_clicked(move |_| {
-        log::info!("UI: Wired button clicked");
-        let nm = nm_wired_btn.clone();
-        let rt = rt_wired_btn.clone();
-        let tx = tx_wired_btn.clone();
-        std::thread::spawn(move || {
-            let nm_guard = nm.lock().unwrap();
-            if let Some(ref nm_inst) = *nm_guard {
-                match rt.block_on(async { nm_inst.get_wired_profiles().await }) {
-                    Ok(profiles) => {
-                        log::info!("App: Found {} wired profiles", profiles.len());
-                        let _ = tx.send_blocking(AppEvent::WiredProfilesResult(profiles));
-                    }
-                    Err(e) => {
-                        log::error!("App: Failed to fetch wired profiles: {}", e);
-                        let _ = tx.send_blocking(AppEvent::Error(format!("Failed to fetch wired profiles: {}", e)));
-                    }
-                }
-            }
-        });
-    });
 
     let win_saved = win.clone();
     let nm_saved = nm.clone();
@@ -1134,35 +983,6 @@ fn setup_ui_callbacks(
         });
     });
 
-    let nm_vpn_act = nm.clone();
-    let rt_vpn_act = rt.clone();
-    let tx_vpn_act = tx.clone();
-    win.vpn_list().set_on_toggle(move |path, state| {
-        let nm = nm_vpn_act.clone();
-        let rt = rt_vpn_act.clone();
-        let tx = tx_vpn_act.clone();
-        std::thread::spawn(move || {
-            let nm_guard = nm.lock().unwrap();
-            if let Some(ref nm_inst) = *nm_guard {
-                let res = if state {
-                    rt.block_on(async { nm_inst.activate_vpn(&path).await })
-                } else {
-                    rt.block_on(async { nm_inst.deactivate_vpn(&path).await })
-                };
-                
-                if let Err(e) = res {
-                    let _ = tx.send_blocking(AppEvent::Error(format!("VPN Action failed: {}", e)));
-                }
-                
-                // Refresh list
-                std::thread::sleep(std::time::Duration::from_millis(500));
-                if let Ok(profiles) = rt.block_on(async { nm_inst.get_vpn_profiles().await }) {
-                    let _ = tx.send_blocking(AppEvent::VpnProfilesResult(profiles));
-                }
-            }
-        });
-    });
-    
     let _win_wired_conn = win.clone();
     let nm_wired_conn = nm.clone();
     let rt_wired_conn = rt.clone();
@@ -1229,24 +1049,14 @@ fn setup_ui_callbacks(
     });
     
     let nm_pwr = nm.clone();
-    let bt_pwr_ref = bt.clone();
     let rt_pwr = rt.clone();
     let tx_pwr = tx.clone();
-    let current_tab_pwr = current_tab.clone();
-    let win_pwr_switch = win.clone();
     let is_switching_toggle = is_switching_pwr.clone();
-    win.header().power_switch().connect_active_notify(move |switch| {
-        let header = win_pwr_switch.header();
-        if header.is_programmatic_update() {
-            return;
-        }
-
+    win.network_list().power_switch().connect_active_notify(move |switch| {
         let enabled = switch.is_active();
         let nm = nm_pwr.clone();
-        let bt = bt_pwr_ref.clone();
         let rt = rt_pwr.clone();
         let tx = tx_pwr.clone();
-        let tab = current_tab_pwr.borrow().clone();
         let is_switching = is_switching_toggle.clone();
         
         *is_switching.lock().unwrap() = true;
@@ -1254,32 +1064,12 @@ fn setup_ui_callbacks(
         let nm_thread = nm.clone();
         let rt_thread = rt.clone();
         let tx_thread = tx.clone();
-        let bt_thread = bt.clone();
-        let rt_bt_thread = rt.clone();
-        let tx_bt_thread = tx.clone();
 
         std::thread::spawn(move || {
-            if tab == "wifi" || tab == "saved" {
-                let nm_guard = nm_thread.lock().unwrap();
-                if let Some(ref nm_inst) = *nm_guard {
-                    let _ = rt_thread.block_on(async { nm_inst.set_wifi_enabled(enabled).await });
-                    let _ = tx_thread.send_blocking(AppEvent::WifiPowerState(enabled));
-                }
-            } else if tab == "bluetooth" {
-                let bt_guard = bt_thread.lock().unwrap();
-                if let Some(ref bt_inst) = *bt_guard {
-                    match rt_bt_thread.block_on(async { bt_inst.set_powered(enabled).await }) {
-                        Ok(()) => {
-                            let _ = tx_bt_thread.send_blocking(AppEvent::BtPowerState(enabled));
-                        },
-                        Err(e) => {
-                            let _ = tx_bt_thread.send_blocking(AppEvent::Error(format!("Failed to toggle Bluetooth: {}", e)));
-                            if let Ok(actual) = rt_bt_thread.block_on(async { bt_inst.is_powered().await }) {
-                                let _ = tx_bt_thread.send_blocking(AppEvent::BtPowerState(actual));
-                            }
-                        }
-                    }
-                }
+            let nm_guard = nm_thread.lock().unwrap();
+            if let Some(ref nm_inst) = *nm_guard {
+                let _ = rt_thread.block_on(async { nm_inst.set_wifi_enabled(enabled).await });
+                let _ = tx_thread.send_blocking(AppEvent::WifiPowerState(enabled));
             }
             std::thread::sleep(std::time::Duration::from_secs(2));
             *is_switching_end.lock().unwrap() = false;
@@ -1340,24 +1130,4 @@ fn setup_periodic_refresh(
         
         glib::ControlFlow::Continue
     });
-}
-
-fn fetch_public_ip(tx: async_channel::Sender<AppEvent>, current_dns: Vec<String>) {
-    log::info!("App: Fetching public IP info via curl...");
-    if let Ok(out) = std::process::Command::new("curl").args(&["-s", "-m", "5", "https://ipapi.co/json/"]).output() {
-        let text = String::from_utf8_lossy(&out.stdout);
-        let mut ip = "Unknown".to_string();
-        let mut isp = "Direct Connection".to_string();
-        for line in text.lines() {
-            if line.contains("\"ip\":") || line.contains("\"query\":") || line.contains("\"ip_addr\":") {
-                if let Some(val) = line.split('"').nth(3) { ip = val.to_string(); }
-            } else if line.contains("\"org\":") || line.contains("\"asn_org\":") || line.contains("\"isp\":") {
-                if let Some(val) = line.split('"').nth(3) { isp = val.to_string(); }
-            }
-        }
-        let is_secure = isp.to_lowercase().contains("vpn") || isp.to_lowercase().contains("hosting");
-        let _ = tx.send_blocking(AppEvent::PublicIpResult(ip, isp, current_dns, is_secure));
-    } else {
-        let _ = tx.send_blocking(AppEvent::PublicIpResult("Unavailable".to_string(), "Check connection".to_string(), current_dns, false));
-    }
 }
