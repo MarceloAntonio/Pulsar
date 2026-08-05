@@ -11,20 +11,36 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    
+    container:
+      image: archlinux:latest
+      
     steps:
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm base-devel rust git gtk4 gtk4-layer-shell pkgconf
+      
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          
+      # Fix git safe directory for actions/checkout in container
+      - name: Fix git permissions
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       
+      - name: Build project
+        run: cargo build --release
+        
       - name: Generate tag
         id: tag
         run: |
           echo "tag=v$(date +'%Y.%m.%d')-${GITHUB_RUN_NUMBER}" >> $GITHUB_OUTPUT
           
-      - name: Create Release
+      - name: Create Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release ${{ steps.tag.outputs.tag }}
           generate_release_notes: true
+          files: target/release/orbit
