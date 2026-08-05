@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to Orbit! We welcome community contributions, whether they are bug reports, feature requests, or pull requests (PRs).
 
-## 🛠️ How to Contribute
+## How to Contribute
 
 ### 1. Reporting Bugs
 If you find a bug, please open an issue on GitHub. Include:
@@ -26,7 +26,7 @@ If you want to write code and fix a bug or add a feature yourself:
 5. **Push** to the branch (`git push origin feature/my-new-feature`).
 6. **Open a Pull Request** against the `main` branch.
 
-## 🧑‍💻 Development Setup
+## Development Setup
 
 Orbit is written in Rust and relies on GTK4 and DBus (NetworkManager and BlueZ).
 
@@ -49,7 +49,7 @@ cargo run -- daemon
 cargo run -- toggle
 ```
 
-## 📐 Code Guidelines
+## Code Guidelines
 
 - **Formatting:** We strictly use the standard Rust formatter. Always run `cargo fmt` before committing your code.
 - **Linting:** Keep your code clean by ensuring `cargo clippy` does not produce any warnings.
