@@ -2,6 +2,14 @@
 
 A native network manager for Wayland using Rust, GTK4, and layer-shell with a high-contrast glassmorphism UI. Manage WiFi, Bluetooth devices, and wired Ethernet connections from a unified, animated panel.
 
+## Interface Preview
+
+<p align="center">
+  <img src="screenshots/example.gif" width="800" alt="Orbit Preview">
+</p>
+
+*The configuration shown in this GIF is available at: [MarceloAntonio/Dotfiles](https://github.com/MarceloAntonio/Dotfiles/tree/main/.config/orbit)*
+
 ## Documentation
 - [Styling & Theming Guide](docs/STYLING.md) - Learn how to customize CSS, colors, and layout.
 - [Contributing Guidelines](CONTRIBUTING.md) - Learn how to help the project and submit code.
