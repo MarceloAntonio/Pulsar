@@ -5,7 +5,7 @@ A native network manager for Wayland using Rust, GTK4, and layer-shell with a hi
 ## Interface Preview
 
 <p align="center">
-  <img src="screenshots/example.gif" width="800" alt="Orbit Preview">
+  <img src="screenshots/example.gif" width="300" alt="Orbit Preview">
 </p>
 
 *The configuration shown in this GIF is available at: [MarceloAntonio/Dotfiles](https://github.com/MarceloAntonio/Dotfiles/tree/main/.config/orbit)*
