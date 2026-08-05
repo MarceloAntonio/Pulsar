@@ -194,6 +194,7 @@ impl BluetoothManager {
         Err(zbus::Error::Address("Bluetooth adapter is not powered on".to_string()))
     }
 
+    #[allow(dead_code)]
     pub async fn set_powered(&self, powered: bool) -> zbus::Result<()> {
         log::info!("BlueZ: Setting powered to {}", powered);
 
