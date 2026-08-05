@@ -1,116 +1,80 @@
-# Orbit - WiFi / Bluetooth / VPN / Ethernet Manager for Wayland
+# Orbit - WiFi & Bluetooth Manager for Wayland
 
-A native network manager for Wayland using Rust, GTK4, and layer-shell with a high-contrast glassmorphism UI. Manage WiFi, Bluetooth devices, VPN profiles, and wired Ethernet connections from a unified panel.
+A native network manager for Wayland using Rust, GTK4, and layer-shell with a high-contrast glassmorphism UI. Manage WiFi, Bluetooth devices, and wired Ethernet connections from a unified, animated panel.
 
-## Interface Preview
+## 📖 Documentation
+- [Styling & Theming Guide](docs/STYLING.md) - Learn how to customize CSS, colors, and layout.
+- [Contributing Guidelines](CONTRIBUTING.md) - Learn how to help the project and submit code.
 
-<p align="center">
-  <img src="screenshots/orbit_wifi.gif" width="800" alt="Orbit WiFi Tab">
-</p>
+## ✨ Features
 
-## Features
+- **WiFi Management**: Smart search, WPA2/WPA3 support, hidden networks, and saved profiles.
+- **Ethernet Management**: List wired connections, connect/disconnect easily.
+- **Bluetooth Management**: Device details, battery alerts, pairing agent, and signal strength.
+- **Modern UI/UX**: High-contrast glassmorphism, smooth animations, and dynamic positioning.
+- **Hot-Reloading**: Change styles and configurations on the fly without restarting.
 
-- **WiFi Management**
-  - **Smart Search**: Real-time filtering that prioritizes start-of-word matches.
-  - Scan and list available networks with GTK signal strength icons.
-  - Connect to open and secured networks (WPA2/WPA3 support).
-  - **Hidden Networks**: Connect to hidden SSIDs with optional password via a dedicated overlay.
-  - **Captive Portal Detection**: Automatically detects captive portals and opens the login page.
-  - Disconnect from active networks.
-  - **Integrated Saved Networks**: Manage autoconnect and forget profiles via a sleek footer overlay.
-  - Detailed network information (IPv4/IPv6, Gateway, DNS, MAC, Speed).
-- **Ethernet Management**
-  - List wired connections with device details.
-  - Connect, disconnect, and toggle autoconnect from a seamless overlay.
-- **Bluetooth Management**
-  - **Device Details**: Show MAC address, trust status, and signal strength (RSSI).
-  - **Battery & Charging**: Real-time battery levels with low-battery alerts and charging indicators.
-  - **Pairing Agent**: Built-in support for PIN/Passkey entry and numeric confirmation.
-  - Scan, pair, connect, disconnect, and remove/forget devices.
-- **VPN & Privacy Dashboard**
-  - **Privacy Dashboard**: Real-time Public IP and ISP detection.
-  - **DNS Identification**: Automatically identifies DNS providers (Local Router, Cloudflare, Google, etc.) with expandable server details.
-  - **Unified VPN Control**: Manage NetworkManager profiles and external apps (Riseup, Tailscale, Mullvad).
-- **Modern UI/UX**
-  - **High-Contrast Glassmorphism**: High-quality translucent panels with customizable opacity.
-  - **Smooth Transitions**: Animated slide-up overlays for passwords, details, and errors.
-  - **Dynamic Positioning**: Anchor to any corner or center edge via CLI.
-  - **Keyboard Friendly**: `Escape` key support to close overlays or hide the window.
-  - **Custom CSS**: Override default styling with `~/.config/orbit/style.css`.
-- **Theme Synchronization**
-  - **Hot-Reloading**: Change colors in real-time without restarting the application.
-  - Automatically syncs with system background, foreground, and accent colors.
+## 🚀 Installation
 
-## Requirements
-
-- Wayland compositor with layer-shell support (Hyprland, Sway, etc.)
-- NetworkManager
-- BlueZ
-- GTK4 & gtk4-layer-shell
-
-## Installation
-
-### Arch Linux (AUR)
-
+### 1. Arch Linux (AUR)
+If you prefer building from the AUR (clones and compiles from source):
 ```bash
-# Using paru
 paru -S orbit-wifi
-
-# Using yay
+# or
 yay -S orbit-wifi
 ```
 
-After installation, enable the background daemon:
+### 2. Arch Linux (Pre-compiled Binary via PKGBUILD)
+To download the optimized, pre-compiled binary from this repository without compiling Rust locally:
 ```bash
-systemctl --user enable --now orbit
+git clone https://github.com/MarceloAntonio/wifi-bar.git
+cd wifi-bar
+makepkg -si
 ```
 
-### From Source
-
+### 3. Build From Source
 ```bash
-git clone https://github.com/LifeOfATitan/orbit.git
-cd orbit
+git clone https://github.com/MarceloAntonio/wifi-bar.git
+cd wifi-bar
 cargo build --release
 sudo install -Dm755 target/release/orbit /usr/bin/orbit
-# Install systemd service
-mkdir -p ~/.config/systemd/user/
-cp orbit.service ~/.config/systemd/user/
-systemctl --user daemon-reload
-systemctl --user enable --now orbit
 ```
 
-## Usage
+## ⚙️ Running and Activating (Daemon)
+
+Orbit consists of a background **daemon** (which handles connections, states, and DBus) and a **frontend** (which you trigger to show/hide).
+
+### 1. Starting the Daemon Automatically
+To ensure Orbit is always running in the background and responds instantly, add it to your Wayland compositor's autostart.
+
+**For Hyprland** (in `~/.config/hypr/hyprland.conf`):
+```conf
+exec-once = orbit daemon
+```
+
+**For Sway** (in `~/.config/sway/config`):
+```conf
+exec orbit daemon
+```
+
+### 2. Controlling the Interface
+Once the daemon is running, you can show, hide, or toggle specific tabs using the CLI (often bound to Waybar or hotkeys):
 
 ```bash
-# Toggle visibility
-orbit toggle [position]
+# Toggle the main window
+orbit toggle
 
-# Show the window
-orbit show
+# Open specifically the WiFi tab
+orbit toggle --tab wifi
 
-# Hide the window
-orbit hide
+# Open specifically the Bluetooth tab
+orbit toggle --tab bluetooth
 
-# Open specific tab directly
-orbit toggle --tab [wifi|bluetooth|vpn]
-
-# Output status in JSON for Waybar
+# Output JSON status for Waybar modules
 orbit waybar-status
-
-# Manually trigger a theme reload
-orbit reload-theme
-
-# Reload config without restarting
-orbit reload-config
-
-# Run as daemon (handled automatically by systemd)
-orbit daemon
-
-# List WiFi networks in terminal
-orbit list
 ```
 
-## Waybar Integration
+## 🧩 Waybar Integration
 
 Orbit is designed to look native in your bar. Add the following module to your Waybar `config.jsonc`:
 
@@ -119,64 +83,10 @@ Orbit is designed to look native in your bar. Add the following module to your W
     "exec": "orbit waybar-status",
     "return-type": "json",
     "interval": 10,
-    "on-click": "orbit toggle top-right",
+    "on-click": "orbit toggle --tab wifi",
     "format": "󱗿"
 }
 ```
 
-## Configuration
-
-### Config File (`~/.config/orbit/config.toml`)
-
-```toml
-# Window position on screen
-position = "top-right"
-
-# Margins (in pixels) from screen edges
-margin_top = 10
-margin_bottom = 10
-margin_left = 10
-margin_right = 10
-
-# Animation (optional)
-# Window transitions: slidedown, slideup, slideleft, slideright, swingdown, swingup, swingleft, swingright, fade, crossfade, none
-window_transition = "slidedown"
-window_transition_duration = 200
-
-# Tab switching transitions: slidehorizontal, slidevertical, slidedown, slideup, slideleft, slideright, crossfade, none
-stack_transition = "slidehorizontal"
-stack_transition_duration = 200
-```
-
-### Theme File (`~/.config/orbit/theme.toml`)
-
-```toml
-accent_primary = "#8b5cf6"
-accent_secondary = "#06b6d4"
-background = "#1e1e2e"
-foreground = "#d4d4d8"
-destructive = "#ef4444"
-opacity = 0.91
-```
-
-`accent_primary_foreground` is computed automatically (white on dark accents, dark on light accents), but can be overridden:
-
-```toml
-accent_primary_foreground = "#ffffff"
-```
-
-### Custom Style Override (`~/.config/orbit/style.css`)
-
-Drop a custom `style.css` in the config directory to override or extend the generated theme. GTK4 CSS classes include `.orbit-panel`, `.orbit-network-row`, `.orbit-button`, `.orbit-tab`, and more. This file is loaded after the dynamic theme and takes precedence.
-
-## License
-
+## 📜 License
 MIT License - see [LICENSE](LICENSE) for details.
-
-## Credits
-
-Developed by [LifeOfATitan](https://github.com/LifeOfATitan).
-
-Contributions:
-
-Added Animations and show/hide based on @themkoi suggestions
