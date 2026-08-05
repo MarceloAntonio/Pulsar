@@ -27,8 +27,8 @@ A native network manager for Wayland using Rust, GTK4, and layer-shell with a hi
 ### 1. Arch Linux (Pre-compiled Binary via PKGBUILD)
 To download the optimized, pre-compiled binary from this repository without compiling Rust locally:
 ```bash
-git clone https://github.com/MarceloAntonio/wifi-bar.git
-cd wifi-bar
+git clone https://github.com/MarceloAntonio/Pulsar.git
+cd Pulsar
 makepkg -si
 ```
 
@@ -39,10 +39,22 @@ First, install the required dependencies:
 
 Then clone and build the project:
 ```bash
-git clone https://github.com/MarceloAntonio/wifi-bar.git
-cd wifi-bar
+git clone https://github.com/MarceloAntonio/Pulsar.git
+cd Pulsar
 cargo build --release
 sudo install -Dm755 target/release/pulsar /usr/bin/pulsar
+```
+
+## Uninstallation
+
+If you installed using the **Pre-compiled Binary (PKGBUILD)** via `makepkg`:
+```bash
+sudo pacman -Rns pulsar-bin
+```
+
+If you installed from **Source** manually:
+```bash
+sudo rm /usr/bin/pulsar
 ```
 
 ## Running and Activating (Daemon)

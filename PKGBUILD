@@ -3,7 +3,7 @@ pkgver=latest
 pkgrel=1
 pkgdesc="A WiFi/Bluetooth manager for Wayland (Custom Fork)"
 arch=('x86_64')
-url="https://github.com/MarceloAntonio/wifi-bar"
+url="https://github.com/MarceloAntonio/Pulsar"
 license=('MIT')
 depends=('gtk4' 'gtk4-layer-shell')
 provides=('pulsar')
@@ -12,7 +12,7 @@ conflicts=('pulsar')
 # O source normalmente baixa de um link estático com versão (ex: $pkgver). 
 # Como as tags são geradas dinamicamente no GitHub Action, podemos apontar para o latest release
 # usando uma URL de "latest" do GitHub.
-source=("pulsar::https://github.com/MarceloAntonio/wifi-bar/releases/latest/download/pulsar")
+source=("pulsar::https://github.com/MarceloAntonio/Pulsar/releases/latest/download/pulsar")
 sha256sums=('SKIP') # SKIP é usado aqui porque o binário 'latest' muda a cada novo commit.
 
 package() {
