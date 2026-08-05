@@ -12,7 +12,7 @@ use crate::theme::Theme;
 use crate::dbus::{NetworkManager, BluetoothManager};
 use crate::dbus::network_manager::{AccessPoint, SecurityType, SavedNetwork, NetworkDetails, WiredProfile};
 use crate::dbus::bluez::{BluetoothDevice, BluetoothDeviceDetails};
-use crate::ui::{OrbitWindow, DeviceAction};
+use crate::ui::{PulsarWindow, DeviceAction};
 use daemon::{DaemonServer, DaemonCommand};
 
 pub enum AppEvent {
@@ -46,14 +46,14 @@ pub enum AppEvent {
     DaemonStarted(DaemonServer),
 }
 
-pub struct OrbitApp {
+pub struct PulsarApp {
     app: Application,
     config: Config,
     theme: Rc<RefCell<Theme>>,
     is_daemon: bool,
 }
 
-impl OrbitApp {
+impl PulsarApp {
     pub fn new(config: Config) -> Result<Self, glib::Error> {
         Self::new_with_mode(config, false)
     }
@@ -63,7 +63,7 @@ impl OrbitApp {
     }
     
     fn new_with_mode(config: Config, is_daemon: bool) -> Result<Self, glib::Error> {
-        let app = Application::new(Some("com.orbit.app"), ApplicationFlags::empty());
+        let app = Application::new(Some("com.pulsar.app"), ApplicationFlags::empty());
         
         let theme = Theme::load();
         let theme = Rc::new(RefCell::new(theme));
@@ -97,7 +97,7 @@ impl OrbitApp {
             let win_theme = win_theme.clone();
             
             let rt = Arc::new(tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime"));
-            let win = OrbitWindow::new(app, config, win_theme.clone());
+            let win = PulsarWindow::new(app, config, win_theme.clone());
             
             let nm: Arc<Mutex<Option<NetworkManager>>> = Arc::new(Mutex::new(None));
             let bt: Arc<Mutex<Option<BluetoothManager>>> = Arc::new(Mutex::new(None));
@@ -252,7 +252,7 @@ impl OrbitApp {
 }
 
 fn setup_events_receiver(
-    win: OrbitWindow,
+    win: PulsarWindow,
     rx: async_channel::Receiver<AppEvent>,
     is_visible: Rc<RefCell<bool>>,
     last_refresh: Rc<RefCell<std::time::Instant>>,
@@ -327,9 +327,9 @@ fn setup_events_receiver(
                 AppEvent::Notify(msg) => {
                     std::thread::spawn(move || {
                         let _ = std::process::Command::new("notify-send")
-                            .arg("Orbit")
+                            .arg("Pulsar")
                             .arg(&msg)
-                            .arg("--app-name=Orbit")
+                            .arg("--app-name=Pulsar")
                             .arg("-i")
                             .arg("network-wireless")
                             .spawn();
@@ -338,9 +338,9 @@ fn setup_events_receiver(
                 AppEvent::CaptivePortal(ssid) => {
                     std::thread::spawn(move || {
                         let _ = std::process::Command::new("notify-send")
-                            .arg("Orbit")
+                            .arg("Pulsar")
                             .arg(&format!("Captive portal detected on {} — opening login page...", ssid))
-                            .arg("--app-name=Orbit")
+                            .arg("--app-name=Pulsar")
                             .arg("-i")
                             .arg("network-wireless")
                             .spawn();
@@ -587,7 +587,7 @@ fn setup_events_receiver(
 }
 
 fn setup_ui_callbacks(
-    win: OrbitWindow,
+    win: PulsarWindow,
     nm: Arc<Mutex<Option<NetworkManager>>>,
     bt: Arc<Mutex<Option<BluetoothManager>>>,
     rt: Arc<tokio::runtime::Runtime>,
@@ -1078,7 +1078,7 @@ fn setup_ui_callbacks(
 }
 
 fn setup_periodic_refresh(
-    _win: OrbitWindow,
+    _win: PulsarWindow,
     nm: Arc<Mutex<Option<NetworkManager>>>,
     bt: Arc<Mutex<Option<BluetoothManager>>>,
     rt: Arc<tokio::runtime::Runtime>,

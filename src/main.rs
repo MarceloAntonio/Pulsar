@@ -10,7 +10,7 @@ use config::Config;
 use app::daemon::{DaemonClient, DaemonCommand};
 
 #[derive(Parser)]
-#[command(name = "orbit")]
+#[command(name = "pulsar")]
 #[command(about = "A WiFi/Bluetooth manager for Wayland")]
 #[command(version)]
 struct Cli {
@@ -64,7 +64,7 @@ fn main() {
 }
 
 fn run_gui(config: Config) {
-    let app = app::OrbitApp::new(config).expect("Failed to create application");
+    let app = app::PulsarApp::new(config).expect("Failed to create application");
     app.run();
 }
 
@@ -74,13 +74,13 @@ fn run_daemon(config: Config) {
         std::process::exit(1);
     }
     
-    let app = app::OrbitApp::new_daemon(config).expect("Failed to create daemon");
+    let app = app::PulsarApp::new_daemon(config).expect("Failed to create daemon");
     app.run();
 }
 
 fn toggle_daemon(position: Option<String>, tab: Option<String>) {
     if !DaemonClient::is_daemon_running() {
-        eprintln!("Daemon is not running. Start it with: orbit daemon");
+        eprintln!("Daemon is not running. Start it with: pulsar daemon");
         std::process::exit(1);
     }
     

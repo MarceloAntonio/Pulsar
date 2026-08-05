@@ -81,7 +81,7 @@ impl Theme {
         let home = std::env::var("HOME").ok()?;
         Some(std::path::PathBuf::from(home)
             .join(".config")
-            .join("orbit")
+            .join("pulsar")
             .join("theme.toml"))
     }
 
@@ -89,7 +89,7 @@ impl Theme {
         let home = std::env::var("HOME").ok()?;
         Some(std::path::PathBuf::from(home)
             .join(".config")
-            .join("orbit")
+            .join("pulsar")
             .join("style.css"))
     }
 
@@ -185,11 +185,11 @@ impl Theme {
 @define-color destructive_fg_color #ffffff;
 
 /* ========================================
-   ORBIT DYNAMIC THEME
+   PULSAR DYNAMIC THEME
    ======================================== */
 
 /* Main Panel */
-.orbit-panel {{
+.pulsar-panel {{
     background-color: {panel_bg};
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -214,7 +214,7 @@ window {{
 }}
 
 /* Header */
-.orbit-header {{
+.pulsar-header {{
     background-color: {section_bg};
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
     border-bottom: 1px solid {separator};
@@ -224,13 +224,13 @@ window {{
 }}
 
 /* Tabs */
-.orbit-tab-bar {{
+.pulsar-tab-bar {{
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 9999px;
     padding: 4px;
 }}
 
-.orbit-tab {{
+.pulsar-tab {{
     background: transparent;
     background-image: none;
     color: {fg};
@@ -246,7 +246,7 @@ window {{
     min-width: 80px;
 }}
 
-.orbit-tab:hover {{
+.pulsar-tab:hover {{
     opacity: 1.0;
     color: {accent_fg};
     background-color: {accent};
@@ -255,7 +255,7 @@ window {{
     box-shadow: none;
 }}
 
-.orbit-tab.active {{
+.pulsar-tab.active {{
     background-color: {accent};
     background-image: none;
     border-radius: 9999px;
@@ -265,9 +265,9 @@ window {{
 }}
 
 /* Overlays - Opaque with padding */
-.orbit-details-overlay, 
-.orbit-password-overlay, 
-.orbit-error-overlay {{
+.pulsar-details-overlay, 
+.pulsar-password-overlay, 
+.pulsar-error-overlay {{
     background-color: {opaque_bg};
     border: 2px solid {accent};
     border-radius: 16px;
@@ -277,15 +277,15 @@ window {{
     padding: 24px;
 }}
 
-.orbit-details-overlay label,
-.orbit-password-overlay label {{
+.pulsar-details-overlay label,
+.pulsar-password-overlay label {{
     color: {fg};
 }}
 
 /* Glass Cards */
-.orbit-network-row,
-.orbit-device-row,
-.orbit-saved-network-row {{
+.pulsar-network-row,
+.pulsar-device-row,
+.pulsar-saved-network-row {{
     background-color: {card_bg};
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
@@ -294,9 +294,9 @@ window {{
     transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }}
 
-.orbit-network-row:hover,
-.orbit-device-row:hover,
-.orbit-saved-network-row:hover {{
+.pulsar-network-row:hover,
+.pulsar-device-row:hover,
+.pulsar-saved-network-row:hover {{
     background-color: {card_hover_bg};
     background-image: none;
     border-color: {accent};
@@ -304,33 +304,33 @@ window {{
 }}
 
 /* Connected State */
-.orbit-network-row.connected,
-.orbit-device-row.connected,
-.orbit-saved-network-row.active {{
+.pulsar-network-row.connected,
+.pulsar-device-row.connected,
+.pulsar-saved-network-row.active {{
     background: linear-gradient(135deg, {separator}, rgba(0,0,0,0.15));
     border: 1px solid {accent};
     box-shadow: 0 0 10px {separator};
 }}
 
 /* Connected/Active Hover State */
-.orbit-network-row.connected:hover,
-.orbit-device-row.connected:hover,
-.orbit-saved-network-row.active:hover {{
+.pulsar-network-row.connected:hover,
+.pulsar-device-row.connected:hover,
+.pulsar-saved-network-row.active:hover {{
     background: linear-gradient(135deg, {connected_hover_separator}, rgba(0,0,0,0.1));
     border-color: {accent};
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 12px {separator};
 }}
 
 /* Keyboard Focus State */
-.orbit-network-row.focused,
-.orbit-device-row.focused,
-.orbit-saved-network-row.focused {{
+.pulsar-network-row.focused,
+.pulsar-device-row.focused,
+.pulsar-saved-network-row.focused {{
     border-color: {accent};
     box-shadow: 0 0 0 2px {separator};
 }}
 
 /* Buttons */
-.orbit-button {{
+.pulsar-button {{
     background-color: rgba(255, 255, 255, 0.08);
     background-image: none;
     color: {fg};
@@ -348,7 +348,7 @@ window {{
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }}
 
-.orbit-button:hover {{
+.pulsar-button:hover {{
     background-color: {accent};
     background-image: none;
     border-color: {accent};
@@ -360,7 +360,7 @@ window {{
     outline: none;
 }}
 
-.orbit-button.primary {{
+.pulsar-button.primary {{
     background-color: {accent};
     background-image: none;
     color: {accent_fg};
@@ -368,11 +368,11 @@ window {{
     border: 1px solid transparent;
 }}
 
-.orbit-button.primary label {{
+.pulsar-button.primary label {{
     color: {accent_fg};
 }}
 
-.orbit-button.primary:hover {{
+.pulsar-button.primary:hover {{
     background-color: {accent_hover};
     background-image: none;
     color: {accent_fg};
@@ -383,12 +383,12 @@ window {{
     outline: none;
 }}
 
-.orbit-button.primary:hover label {{
+.pulsar-button.primary:hover label {{
     color: {accent_fg};
 }}
 
 /* Destructive Buttons */
-.orbit-button.destructive {{
+.pulsar-button.destructive {{
     background-color: {destructive};
     background-image: none;
     color: #ffffff;
@@ -396,7 +396,7 @@ window {{
     box-shadow: 0 4px 12px {destructive_separator};
 }}
 
-.orbit-button.destructive:hover {{
+.pulsar-button.destructive:hover {{
     background-color: {destructive_hover};
     background-image: none;
     color: #ffffff;
@@ -408,7 +408,7 @@ window {{
 }}
 
 /* Section Headers */
-.orbit-section-header {{
+.pulsar-section-header {{
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.15em;
@@ -420,12 +420,12 @@ window {{
 }}
 
 /* VPN Dashboard */
-.orbit-vpn-dashboard {{
+.pulsar-vpn-dashboard {{
     padding: 4px 0;
 }}
 
 /* Wired Overlay */
-.orbit-wired-overlay {{
+.pulsar-wired-overlay {{
     background-color: {opaque_bg};
     border: 2px solid {accent};
     border-radius: 16px;
@@ -435,7 +435,7 @@ window {{
     padding: 24px;
 }}
 
-.orbit-wired-device-row {{
+.pulsar-wired-device-row {{
     background-color: {card_bg};
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
@@ -443,19 +443,19 @@ window {{
     margin: 4px 0;
 }}
 
-.orbit-wired-button {{
+.pulsar-wired-button {{
     color: {fg};
     opacity: 0.6;
     transition: opacity 0.2s ease, color 0.2s ease;
 }}
 
-.orbit-wired-button:hover {{
+.pulsar-wired-button:hover {{
     opacity: 1.0;
     color: {accent};
 }}
 
 /* Footer */
-.orbit-footer {{
+.pulsar-footer {{
     background-color: {section_bg};
     border-top: 1px solid {separator};
     border-radius: 0 0 16px 16px;
@@ -463,30 +463,30 @@ window {{
     padding: 24px 28px;
 }}
 
-.orbit-ssid {{
+.pulsar-ssid {{
     font-weight: 700;
     font-size: 14px;
     color: {fg};
     padding: 4px 0;
 }}
 
-.orbit-detail-label {{
+.pulsar-detail-label {{
     font-size: 10px;
     color: {fg};
     opacity: 0.7;
 }}
 
-.orbit-detail-value {{
+.pulsar-detail-value {{
     font-size: 12px;
     color: {fg};
     font-weight: 600;
 }}
 
-.orbit-icon-accent {{
+.pulsar-icon-accent {{
     color: {accent};
 }}
 
-.orbit-title {{
+.pulsar-title {{
     font-size: 16px;
     font-weight: 800;
     color: {fg};
@@ -513,25 +513,25 @@ entry:focus, password-entry:focus {{
 }}
 
 /* Password dialog error */
-.orbit-password-error {{
+.pulsar-password-error {{
     color: {destructive};
     font-size: 12px;
     font-weight: 500;
 }}
 
 /* Connecting state */
-.orbit-button.connecting {{
+.pulsar-button.connecting {{
     opacity: 0.7;
 }}
 
 /* Row error state */
-.orbit-status-error {{
+.pulsar-status-error {{
     color: {destructive};
     font-size: 11px;
 }}
 
 /* Placeholder text (scanning, empty states) */
-.orbit-placeholder {{
+.pulsar-placeholder {{
     color: {fg};
     opacity: 0.5;
     font-size: 13px;
@@ -540,64 +540,64 @@ entry:focus, password-entry:focus {{
 }}
 
 /* Status line (under device/network name) */
-.orbit-status {{
+.pulsar-status {{
     font-size: 11px;
     color: {fg};
     opacity: 0.6;
     padding: 2px 0;
 }}
 
-.orbit-status-accent {{
+.pulsar-status-accent {{
     color: {accent};
     opacity: 0.9;
     font-weight: 600;
 }}
 
 /* Signal/device type icon (disconnected state) */
-.orbit-signal-icon {{
+.pulsar-signal-icon {{
     color: {fg};
     opacity: 0.5;
 }}
 
 /* Signal strength bars */
-.orbit-signal-bar-active {{
+.pulsar-signal-bar-active {{
     background-color: {fg};
     opacity: 0.7;
     border-radius: 1px;
 }}
 
-.orbit-signal-bar-active-accent {{
+.pulsar-signal-bar-active-accent {{
     background-color: {accent};
     border-radius: 1px;
 }}
 
-.orbit-signal-bar-inactive {{
+.pulsar-signal-bar-inactive {{
     background-color: {fg};
     opacity: 0.15;
     border-radius: 1px;
 }}
 
-.orbit-signal-bars-pad {{
+.pulsar-signal-bars-pad {{
     padding: 2px;
 }}
 
 /* Icon container (connected state badge) */
-.orbit-icon-container {{
+.pulsar-icon-container {{
     background-color: {separator};
     border-radius: 8px;
     padding: 6px;
 }}
 
 /* Logo container */
-.orbit-logo-container {{
+.pulsar-logo-container {{
     padding: 6px;
 }}
 
 /* Power toggle switch */
-window switch.orbit-toggle-switch,
-window switch.orbit-toggle-switch:not(:backdrop),
-window switch.orbit-toggle-switch trough,
-window switch.orbit-toggle-switch:not(:backdrop) trough {{
+window switch.pulsar-toggle-switch,
+window switch.pulsar-toggle-switch:not(:backdrop),
+window switch.pulsar-toggle-switch trough,
+window switch.pulsar-toggle-switch:not(:backdrop) trough {{
     background-color: rgba(255, 255, 255, 0.12) !important;
     background-image: none !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -607,18 +607,18 @@ window switch.orbit-toggle-switch:not(:backdrop) trough {{
     min-height: 24px;
 }}
 
-window switch.orbit-toggle-switch:checked,
-window switch.orbit-toggle-switch:checked:not(:backdrop),
-window switch.orbit-toggle-switch:checked:hover,
-window switch.orbit-toggle-switch:checked trough,
-window switch.orbit-toggle-switch:checked:not(:backdrop) trough {{
+window switch.pulsar-toggle-switch:checked,
+window switch.pulsar-toggle-switch:checked:not(:backdrop),
+window switch.pulsar-toggle-switch:checked:hover,
+window switch.pulsar-toggle-switch:checked trough,
+window switch.pulsar-toggle-switch:checked:not(:backdrop) trough {{
     background-color: {accent} !important;
     background-image: none !important;
     border-color: {accent} !important;
     box-shadow: none !important;
 }}
 
-window switch.orbit-toggle-switch slider {{
+window switch.pulsar-toggle-switch slider {{
     background-color: #ffffff !important;
     border-radius: 9999px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
@@ -627,31 +627,31 @@ window switch.orbit-toggle-switch slider {{
     margin: 3px;
 }}
 
-window switch.orbit-toggle-switch:checked slider,
-window switch.orbit-toggle-switch:checked:not(:backdrop) slider {{
+window switch.pulsar-toggle-switch:checked slider,
+window switch.pulsar-toggle-switch:checked:not(:backdrop) slider {{
     background-color: {accent_fg} !important;
 }}
 
-.orbit-battery-mini {{
+.pulsar-battery-mini {{
     font-size: 10px;
     font-weight: 700;
     color: {fg};
     opacity: 0.8;
 }}
 
-.orbit-battery-mini.low {{
+.pulsar-battery-mini.low {{
     color: {destructive};
     opacity: 1.0;
 }}
 
-.orbit-search-container {{
+.pulsar-search-container {{
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 2px;
 }}
 
-.orbit-search-entry {{
+.pulsar-search-entry {{
     background: transparent;
     border: none;
     box-shadow: none;
@@ -659,24 +659,24 @@ window switch.orbit-toggle-switch:checked:not(:backdrop) slider {{
     font-size: 12px;
 }}
 
-.orbit-search-entry > text {{
+.pulsar-search-entry > text {{
     caret-color: {accent};
 }}
 
-.orbit-saved-list-container {{
+.pulsar-saved-list-container {{
     margin-top: 8px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 12px;
 }}
 
-.orbit-dns-detail {{
+.pulsar-dns-detail {{
     font-size: 10px;
     color: {fg};
     opacity: 0.75;
     font-family: monospace;
 }}
 
-.orbit-dns-header {{
+.pulsar-dns-header {{
     background-color: {card_bg};
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
@@ -684,12 +684,12 @@ window switch.orbit-toggle-switch:checked:not(:backdrop) slider {{
     transition: background-color 0.25s ease, border-color 0.25s ease;
 }}
 
-.orbit-dns-header:hover {{
+.pulsar-dns-header:hover {{
     background-color: {card_hover_bg};
     border-color: {accent};
 }}
 
-.orbit-dns-expand-icon {{
+.pulsar-dns-expand-icon {{
     color: {fg};
     opacity: 0.4;
     transition: opacity 0.2s ease;

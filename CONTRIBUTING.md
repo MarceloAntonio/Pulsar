@@ -1,6 +1,6 @@
-# Contributing to Orbit
+# Contributing to Pulsar
 
-Thank you for your interest in contributing to Orbit! We welcome community contributions, whether they are bug reports, feature requests, or pull requests (PRs).
+Thank you for your interest in contributing to Pulsar! We welcome community contributions, whether they are bug reports, feature requests, or pull requests (PRs).
 
 ## How to Contribute
 
@@ -9,10 +9,10 @@ If you find a bug, please open an issue on GitHub. Include:
 - A clear, descriptive title.
 - Steps to reproduce the issue.
 - Your OS, Window Manager (e.g., Hyprland, Sway), and GTK4 version.
-- Any relevant logs (run `orbit daemon` in a terminal to see standard output errors).
+- Any relevant logs (run `pulsar daemon` in a terminal to see standard output errors).
 
 ### 2. Suggesting Enhancements
-Have an idea to make Orbit better? Open an issue! We love discussing new features. Try to explain:
+Have an idea to make Pulsar better? Open an issue! We love discussing new features. Try to explain:
 - What the feature is.
 - Why it would be useful to you and others.
 - How you envision it working in the UI.
@@ -28,10 +28,10 @@ If you want to write code and fix a bug or add a feature yourself:
 
 ## Development Setup
 
-Orbit is written in Rust and relies on GTK4 and DBus (NetworkManager and BlueZ).
+Pulsar is written in Rust and relies on GTK4 and DBus (NetworkManager and BlueZ).
 
 ### Prerequisites (Arch Linux)
-To compile and test Orbit locally, you will need the standard Rust toolchain and GTK development libraries.
+To compile and test Pulsar locally, you will need the standard Rust toolchain and GTK development libraries.
 
 ```bash
 sudo pacman -S base-devel rustup git gtk4 gtk4-layer-shell pkgconf
@@ -54,6 +54,6 @@ cargo run -- toggle
 - **Formatting:** We strictly use the standard Rust formatter. Always run `cargo fmt` before committing your code.
 - **Linting:** Keep your code clean by ensuring `cargo clippy` does not produce any warnings.
 - **Modularity:** UI components should remain modular (e.g., `src/ui/network_list.rs` handles only the network list). Do not pollute the main orchestrator (`window.rs`) with component-specific logic.
-- **GTK CSS:** When adding new UI elements, always assign them a semantic CSS class (e.g., `.orbit-my-new-element`) using `.add_css_class()` so users can theme them via `style.css`.
+- **GTK CSS:** When adding new UI elements, always assign them a semantic CSS class (e.g., `.pulsar-my-new-element`) using `.add_css_class()` so users can theme them via `style.css`.
 
 We look forward to reviewing your contributions!

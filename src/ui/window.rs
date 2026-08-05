@@ -11,7 +11,7 @@ use super::device_list::DeviceList;
 use super::saved_networks_list::SavedNetworksList;
 use crate::dbus::network_manager::{NetworkDetails, WiredProfile};
 
-pub struct OrbitWindow {
+pub struct PulsarWindow {
     window: ApplicationWindow,
     root_revealer: gtk::Revealer,
     config: Rc<RefCell<Config>>,
@@ -60,7 +60,7 @@ pub struct OrbitWindow {
     is_animating: Rc<Cell<bool>>,
 }
 
-impl Clone for OrbitWindow {
+impl Clone for PulsarWindow {
     fn clone(&self) -> Self {
         Self {
             window: self.window.clone(),
@@ -113,7 +113,7 @@ impl Clone for OrbitWindow {
     }
 }
 
-impl OrbitWindow {
+impl PulsarWindow {
     pub fn new(app: &Application, config: Config, theme: Rc<RefCell<Theme>>) -> Self {
         println!("Loaded config: window_transition = '{}'", config.window_transition);
         let window = ApplicationWindow::builder()
@@ -125,7 +125,7 @@ impl OrbitWindow {
             .build();
         
         window.init_layer_shell();
-        window.set_namespace("orbit");
+        window.set_namespace("pulsar");
         window.set_layer(Layer::Overlay);
         window.set_keyboard_mode(KeyboardMode::None);
         window.set_exclusive_zone(0);
@@ -153,7 +153,7 @@ impl OrbitWindow {
 
         let main_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-panel"])
+            .css_classes(["pulsar-panel"])
             .vexpand(true)
             .hexpand(true)
             .overflow(gtk::Overflow::Hidden)
@@ -182,7 +182,7 @@ impl OrbitWindow {
         
         let details_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-details-overlay"])
+            .css_classes(["pulsar-details-overlay"])
             .spacing(8)
             .margin_start(16)
             .margin_end(16)
@@ -197,14 +197,14 @@ impl OrbitWindow {
         
         let details_title = gtk::Label::builder()
             .label("Network Details")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .hexpand(true)
             .build();
         
         let details_close_icon_btn = gtk::Button::builder()
             .icon_name("window-close-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         details_header_row.append(&details_title);
@@ -237,7 +237,7 @@ impl OrbitWindow {
         let password_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .spacing(12)
-            .css_classes(["orbit-password-overlay"])
+            .css_classes(["pulsar-password-overlay"])
             .margin_start(16)
             .margin_end(16)
             .margin_top(16)
@@ -246,7 +246,7 @@ impl OrbitWindow {
         
         let password_label = gtk::Label::builder()
             .label("Enter password:")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .build();
         
@@ -257,7 +257,7 @@ impl OrbitWindow {
         
         let password_error_label = gtk::Label::builder()
             .label("")
-            .css_classes(["orbit-error-text-small"])
+            .css_classes(["pulsar-error-text-small"])
             .halign(gtk::Align::Start)
             .visible(false)
             .build();
@@ -270,12 +270,12 @@ impl OrbitWindow {
         
         let password_cancel_btn = gtk::Button::builder()
             .label("Cancel")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         let password_connect_btn = gtk::Button::builder()
             .label("Connect")
-            .css_classes(["orbit-button", "primary", "flat"])
+            .css_classes(["pulsar-button", "primary", "flat"])
             .build();
         
         password_btn_row.append(&password_cancel_btn);
@@ -307,7 +307,7 @@ impl OrbitWindow {
         let hidden_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .spacing(12)
-            .css_classes(["orbit-password-overlay"])
+            .css_classes(["pulsar-password-overlay"])
             .margin_start(16)
             .margin_end(16)
             .margin_top(16)
@@ -316,7 +316,7 @@ impl OrbitWindow {
         
         let hidden_label = gtk::Label::builder()
             .label("Connect to Hidden Network")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .build();
         
@@ -338,12 +338,12 @@ impl OrbitWindow {
         
         let hidden_cancel_btn = gtk::Button::builder()
             .label("Cancel")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         let hidden_connect_btn = gtk::Button::builder()
             .label("Connect")
-            .css_classes(["orbit-button", "primary", "flat"])
+            .css_classes(["pulsar-button", "primary", "flat"])
             .build();
         
         hidden_btn_row.append(&hidden_cancel_btn);
@@ -373,7 +373,7 @@ impl OrbitWindow {
         let error_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .spacing(8)
-            .css_classes(["orbit-error-overlay"])
+            .css_classes(["pulsar-error-overlay"])
             .margin_start(16)
             .margin_end(16)
             .margin_top(16)
@@ -393,14 +393,14 @@ impl OrbitWindow {
             
         let error_title = gtk::Label::builder()
             .label("Error")
-            .css_classes(["orbit-error-title"])
+            .css_classes(["pulsar-error-title"])
             .halign(gtk::Align::Start)
             .hexpand(true)
             .build();
             
         let error_close_btn = gtk::Button::builder()
             .icon_name("window-close-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
             
         error_header.append(&error_icon);
@@ -409,7 +409,7 @@ impl OrbitWindow {
         
         let error_label = gtk::Label::builder()
             .label("")
-            .css_classes(["orbit-error-text"])
+            .css_classes(["pulsar-error-text"])
             .halign(gtk::Align::Start)
             .wrap(true)
             .build();
@@ -436,7 +436,7 @@ impl OrbitWindow {
         // Saved Networks Overlay
         let saved_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-password-overlay"])
+            .css_classes(["pulsar-password-overlay"])
             .spacing(8)
             .width_request(380)
             .build();
@@ -448,14 +448,14 @@ impl OrbitWindow {
         
         let saved_title = gtk::Label::builder()
             .label("Saved Networks")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .hexpand(true)
             .build();
         
         let saved_close_icon_btn = gtk::Button::builder()
             .icon_name("window-close-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         saved_header_row.append(&saved_title);
@@ -489,7 +489,7 @@ impl OrbitWindow {
         let bt_agent_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .spacing(12)
-            .css_classes(["orbit-password-overlay"])
+            .css_classes(["pulsar-password-overlay"])
             .margin_start(16)
             .margin_end(16)
             .margin_top(16)
@@ -498,7 +498,7 @@ impl OrbitWindow {
         
         let bt_agent_label = gtk::Label::builder()
             .label("Bluetooth Pairing Request")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .wrap(true)
             .build();
@@ -517,12 +517,12 @@ impl OrbitWindow {
         
         let bt_agent_cancel_btn = gtk::Button::builder()
             .label("Cancel")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         let bt_agent_confirm_btn = gtk::Button::builder()
             .label("Confirm")
-            .css_classes(["orbit-button", "primary", "flat"])
+            .css_classes(["pulsar-button", "primary", "flat"])
             .build();
         
         bt_agent_btn_row.append(&bt_agent_cancel_btn);
@@ -545,7 +545,7 @@ impl OrbitWindow {
         
         let wired_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-wired-overlay"])
+            .css_classes(["pulsar-wired-overlay"])
             .spacing(8)
             .margin_start(16)
             .margin_end(16)
@@ -560,14 +560,14 @@ impl OrbitWindow {
         
         let wired_title = gtk::Label::builder()
             .label("Wired Connections")
-            .css_classes(["orbit-detail-label"])
+            .css_classes(["pulsar-detail-label"])
             .halign(gtk::Align::Start)
             .hexpand(true)
             .build();
         
         let wired_close_btn = gtk::Button::builder()
             .icon_name("window-close-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .build();
         
         wired_header_row.append(&wired_title);
@@ -1016,27 +1016,27 @@ impl OrbitWindow {
         for (label, value, icon_name) in rows {
             let row = gtk::Box::builder()
                 .orientation(Orientation::Horizontal)
-                .css_classes(["orbit-details-row"])
+                .css_classes(["pulsar-details-row"])
                 .spacing(8)
                 .build();
             
             let icon = gtk::Image::builder()
                 .icon_name(icon_name)
                 .pixel_size(16)
-                .css_classes(["orbit-detail-icon"])
+                .css_classes(["pulsar-detail-icon"])
                 .valign(gtk::Align::Center)
                 .build();
             
             let label_widget = gtk::Label::builder()
                 .label(label)
-                .css_classes(["orbit-detail-label"])
+                .css_classes(["pulsar-detail-label"])
                 .halign(gtk::Align::Start)
                 .hexpand(true)
                 .build();
             
             let value_widget = gtk::Label::builder()
                 .label(value)
-                .css_classes(["orbit-detail-value"])
+                .css_classes(["pulsar-detail-value"])
                 .halign(gtk::Align::End)
                 .build();
             value_widget.set_ellipsize(gtk::pango::EllipsizeMode::End);
@@ -1084,27 +1084,27 @@ impl OrbitWindow {
         for (label, value, icon_name) in rows {
             let row = gtk::Box::builder()
                 .orientation(Orientation::Horizontal)
-                .css_classes(["orbit-details-row"])
+                .css_classes(["pulsar-details-row"])
                 .spacing(8)
                 .build();
             
             let icon = gtk::Image::builder()
                 .icon_name(icon_name)
                 .pixel_size(16)
-                .css_classes(["orbit-detail-icon"])
+                .css_classes(["pulsar-detail-icon"])
                 .valign(gtk::Align::Center)
                 .build();
             
             let label_widget = gtk::Label::builder()
                 .label(label)
-                .css_classes(["orbit-detail-label"])
+                .css_classes(["pulsar-detail-label"])
                 .halign(gtk::Align::Start)
                 .hexpand(true)
                 .build();
             
             let value_widget = gtk::Label::builder()
                 .label(value)
-                .css_classes(["orbit-detail-value"])
+                .css_classes(["pulsar-detail-value"])
                 .halign(gtk::Align::End)
                 .build();
             
@@ -1118,9 +1118,9 @@ impl OrbitWindow {
         let trust_btn = gtk::Button::builder()
             .label(if details.is_trusted { "Untrust Device" } else { "Trust Device" })
             .css_classes(if details.is_trusted { 
-                vec!["orbit-button", "destructive", "flat"] 
+                vec!["pulsar-button", "destructive", "flat"] 
             } else { 
-                vec!["orbit-button", "primary", "flat"] 
+                vec!["pulsar-button", "primary", "flat"] 
             })
             .margin_top(8)
             .build();
@@ -1139,7 +1139,7 @@ impl OrbitWindow {
         if details.is_paired {
             let forget_btn = gtk::Button::builder()
                 .label("Forget Device")
-                .css_classes(["orbit-button", "destructive", "flat"])
+                .css_classes(["pulsar-button", "destructive", "flat"])
                 .margin_top(4)
                 .build();
             
@@ -1250,7 +1250,7 @@ impl OrbitWindow {
         let container = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .spacing(4)
-            .css_classes(["orbit-wired-device-row"])
+            .css_classes(["pulsar-wired-device-row"])
             .build();
         
         let main_row = gtk::Box::builder()
@@ -1264,7 +1264,7 @@ impl OrbitWindow {
             .valign(gtk::Align::Center)
             .build();
         if profile.is_active {
-            icon.add_css_class("orbit-icon-accent");
+            icon.add_css_class("pulsar-icon-accent");
         }
         main_row.append(&icon);
         
@@ -1277,7 +1277,7 @@ impl OrbitWindow {
         
         let name_label = gtk::Label::builder()
             .label(&profile.device_name)
-            .css_classes(["orbit-ssid"])
+            .css_classes(["pulsar-ssid"])
             .halign(gtk::Align::Start)
             .build();
         info_box.append(&name_label);
@@ -1296,7 +1296,7 @@ impl OrbitWindow {
         
         let status_label = gtk::Label::builder()
             .label(&status_text)
-            .css_classes(["orbit-status"])
+            .css_classes(["pulsar-status"])
             .halign(gtk::Align::Start)
             .build();
         info_box.append(&status_label);
@@ -1306,7 +1306,7 @@ impl OrbitWindow {
         if profile.is_active && !profile.connection_path.is_empty() {
             let disc_btn = gtk::Button::builder()
                 .label("Disconnect")
-                .css_classes(["orbit-button", "flat"])
+                .css_classes(["pulsar-button", "flat"])
                 .build();
             let dev_path = profile.device_path.clone();
             let cb = self.wired_disconnect_callback.clone();
@@ -1319,7 +1319,7 @@ impl OrbitWindow {
         } else if !profile.connection_path.is_empty() {
             let conn_btn = gtk::Button::builder()
                 .label("Connect")
-                .css_classes(["orbit-button", "flat", "primary"])
+                .css_classes(["pulsar-button", "flat", "primary"])
                 .build();
             let conn_path = profile.connection_path.clone();
             let dev_path = profile.device_path.clone();
@@ -1341,7 +1341,7 @@ impl OrbitWindow {
             let details_btn = gtk::Button::builder()
                 .label("Details")
                 .icon_name("pan-end-symbolic")
-                .css_classes(["orbit-button", "flat"])
+                .css_classes(["pulsar-button", "flat"])
                 .build();
             
             // Build details content
@@ -1355,7 +1355,7 @@ impl OrbitWindow {
             if !profile.mac_address.is_empty() {
                 let mac_label = gtk::Label::builder()
                     .label(&format!("MAC: {}", profile.mac_address))
-                    .css_classes(["orbit-status"])
+                    .css_classes(["pulsar-status"])
                     .halign(gtk::Align::Start)
                     .selectable(true)
                     .build();
@@ -1366,7 +1366,7 @@ impl OrbitWindow {
                 if !profile.gateway.is_empty() {
                     let gw_label = gtk::Label::builder()
                         .label(&format!("Gateway: {}", profile.gateway))
-                        .css_classes(["orbit-status"])
+                        .css_classes(["pulsar-status"])
                         .halign(gtk::Align::Start)
                         .selectable(true)
                         .build();
@@ -1377,7 +1377,7 @@ impl OrbitWindow {
                     let dns_text = profile.dns_servers.join(", ");
                     let dns_label = gtk::Label::builder()
                         .label(&format!("DNS: {}", dns_text))
-                        .css_classes(["orbit-status"])
+                        .css_classes(["pulsar-status"])
                         .halign(gtk::Align::Start)
                         .selectable(true)
                         .wrap(true)
@@ -1395,13 +1395,13 @@ impl OrbitWindow {
                 
                 let auto_label = gtk::Label::builder()
                     .label("Auto-connect")
-                    .css_classes(["orbit-status"])
+                    .css_classes(["pulsar-status"])
                     .halign(gtk::Align::Start)
                     .build();
                 
                 let auto_switch = gtk::Switch::builder()
                     .active(profile.autoconnect)
-                    .css_classes(["orbit-toggle-switch"])
+                    .css_classes(["pulsar-toggle-switch"])
                     .valign(gtk::Align::Center)
                     .build();
                 

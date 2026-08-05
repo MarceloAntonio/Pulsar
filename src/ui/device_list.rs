@@ -39,25 +39,25 @@ impl DeviceList {
             .hexpand(true)
             .hscrollbar_policy(gtk::PolicyType::Never)
             .min_content_height(280)
-            .css_classes(["orbit-scrolled"])
+            .css_classes(["pulsar-scrolled"])
             .build();
         
         let list_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-list"])
+            .css_classes(["pulsar-list"])
             .build();
         
         scrolled.set_child(Some(&list_box));
         container.append(&scrolled);
         
         let footer = gtk::Box::builder()
-            .css_classes(["orbit-footer"])
+            .css_classes(["pulsar-footer"])
             .margin_top(8)
             .build();
         
         let scan_button = gtk::Button::builder()
             .label(" Scan for Devices")
-            .css_classes(["orbit-button", "primary", "flat"])
+            .css_classes(["pulsar-button", "primary", "flat"])
             .hexpand(true)
             .build();
         
@@ -83,7 +83,7 @@ impl DeviceList {
     fn show_loading(&self) {
         let placeholder = gtk::Label::builder()
             .label("Loading devices...")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -91,7 +91,7 @@ impl DeviceList {
     fn show_placeholder(&self) {
         let placeholder = gtk::Label::builder()
             .label("Click 'Scan' to find devices")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -103,7 +103,7 @@ impl DeviceList {
         
         let scanning = gtk::Label::builder()
             .label("Scanning for devices...")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&scanning);
     }
@@ -160,7 +160,7 @@ impl DeviceList {
         if !connected_devices.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("CONNECTED")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -174,7 +174,7 @@ impl DeviceList {
         if !paired_devices.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("PAIRED")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -188,7 +188,7 @@ impl DeviceList {
         if !available_devices.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("AVAILABLE")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -204,7 +204,7 @@ impl DeviceList {
         let row = gtk::Box::builder()
             .orientation(Orientation::Horizontal)
             .spacing(12)
-            .css_classes(["orbit-device-row"])
+            .css_classes(["pulsar-device-row"])
             .focusable(true)
             .build();
         
@@ -232,7 +232,7 @@ impl DeviceList {
         let icon = gtk::Image::builder()
             .icon_name(icon_name)
             .pixel_size(20)
-            .css_classes(["orbit-device-icon"])
+            .css_classes(["pulsar-device-icon"])
             .valign(gtk::Align::Center)
             .build();
         row.append(&icon);
@@ -246,7 +246,7 @@ impl DeviceList {
         
         let name = gtk::Label::builder()
             .label(&device.name)
-            .css_classes(["orbit-device-name"])
+            .css_classes(["pulsar-device-name"])
             .halign(gtk::Align::Start)
             .build();
         info_box.append(&name);
@@ -267,7 +267,7 @@ impl DeviceList {
         
         let status = gtk::Label::builder()
             .label(&status_text)
-            .css_classes(["orbit-status"])
+            .css_classes(["pulsar-status"])
             .halign(gtk::Align::Start)
             .build();
         status_row.append(&status);
@@ -275,7 +275,7 @@ impl DeviceList {
         if let Some(battery) = device.battery_percentage {
             let separator = gtk::Label::builder()
                 .label("·")
-                .css_classes(["orbit-status"])
+                .css_classes(["pulsar-status"])
                 .build();
             status_row.append(&separator);
 
@@ -284,7 +284,7 @@ impl DeviceList {
                 .spacing(2)
                 .build();
 
-            let mut bat_classes = vec!["orbit-battery-mini"];
+            let mut bat_classes = vec!["pulsar-battery-mini"];
             if battery < 20 {
                 bat_classes.push("low");
             }
@@ -341,7 +341,7 @@ impl DeviceList {
             let working_box = gtk::Box::builder()
                 .orientation(Orientation::Horizontal)
                 .spacing(8)
-                .css_classes(["orbit-working-indicator"])
+                .css_classes(["pulsar-working-indicator"])
                 .build();
             
             let spinner = gtk::Spinner::builder()
@@ -359,7 +359,7 @@ impl DeviceList {
             
             let label = gtk::Label::builder()
                 .label(action_text)
-                .css_classes(["orbit-status"])
+                .css_classes(["pulsar-status"])
                 .build();
             
             working_box.append(&spinner);
@@ -377,9 +377,9 @@ impl DeviceList {
             let action_btn = gtk::Button::builder()
                 .label(action_label)
                 .css_classes(if device.is_connected || device.is_paired {
-                    vec!["orbit-button", "primary", "flat"]
+                    vec!["pulsar-button", "primary", "flat"]
                 } else {
-                    vec!["orbit-button", "flat"]
+                    vec!["pulsar-button", "flat"]
                 })
                 .build();
             
@@ -396,7 +396,7 @@ impl DeviceList {
             if device.is_paired {
                 let details_btn = gtk::Button::builder()
                     .icon_name("help-about-symbolic")
-                    .css_classes(["orbit-button", "flat"])
+                    .css_classes(["pulsar-button", "flat"])
                     .tooltip_text("Device Details")
                     .build();
                 

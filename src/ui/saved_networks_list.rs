@@ -17,7 +17,7 @@ impl SavedNetworksList {
     pub fn new() -> Self {
         let container = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-saved-list-container"])
+            .css_classes(["pulsar-saved-list-container"])
             .hexpand(true)
             .vexpand(true)
             .build();
@@ -29,14 +29,14 @@ impl SavedNetworksList {
             .min_content_height(350)
             .min_content_width(340)
             .height_request(350)
-            .css_classes(["orbit-scrolled"])
+            .css_classes(["pulsar-scrolled"])
             .build();
 
 
         
         let list_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-list"])
+            .css_classes(["pulsar-list"])
             .focusable(true)
             .vexpand(true)
             .build();
@@ -60,7 +60,7 @@ impl SavedNetworksList {
     fn show_loading(&self) {
         let placeholder = gtk::Label::builder()
             .label("Loading saved networks...")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -68,7 +68,7 @@ impl SavedNetworksList {
     fn show_placeholder(&self) {
         let placeholder = gtk::Label::builder()
             .label("No saved networks")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -93,7 +93,7 @@ impl SavedNetworksList {
         if !active_networks.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("CURRENTLY CONNECTED")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -107,7 +107,7 @@ impl SavedNetworksList {
         if !saved_networks.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("SAVED NETWORKS")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -121,9 +121,9 @@ impl SavedNetworksList {
     
     fn create_network_row(&self, network: &SavedNetwork) -> gtk::Box {
         let css_classes = if network.is_active {
-            vec!["orbit-saved-network-row", "active"]
+            vec!["pulsar-saved-network-row", "active"]
         } else {
-            vec!["orbit-saved-network-row"]
+            vec!["pulsar-saved-network-row"]
         };
         
         let row = gtk::Box::builder()
@@ -148,7 +148,7 @@ impl SavedNetworksList {
         
         if network.is_active {
             let icon_container = gtk::Box::builder()
-                .css_classes(["orbit-icon-container"])
+                .css_classes(["pulsar-icon-container"])
                 .halign(gtk::Align::Center)
                 .valign(gtk::Align::Center)
                 .build();
@@ -156,7 +156,7 @@ impl SavedNetworksList {
             let wifi_icon = gtk::Image::builder()
                 .icon_name("network-wireless-symbolic")
                 .pixel_size(16)
-                .css_classes(["orbit-icon-accent"])
+                .css_classes(["pulsar-icon-accent"])
                 .valign(gtk::Align::Center)
                 .build();
             icon_container.append(&wifi_icon);
@@ -165,7 +165,7 @@ impl SavedNetworksList {
             let wifi_icon = gtk::Image::builder()
                 .icon_name("network-wireless-symbolic")
                 .pixel_size(16)
-                .css_classes(["orbit-signal-icon"])
+                .css_classes(["pulsar-signal-icon"])
                 .valign(gtk::Align::Center)
                 .build();
             row.append(&wifi_icon);
@@ -180,7 +180,7 @@ impl SavedNetworksList {
         
         let ssid = gtk::Label::builder()
             .label(&network.ssid)
-            .css_classes(["orbit-ssid"])
+            .css_classes(["pulsar-ssid"])
             .halign(gtk::Align::Start)
             .ellipsize(gtk::pango::EllipsizeMode::End)
             .build();
@@ -202,11 +202,11 @@ impl SavedNetworksList {
         
         let status = gtk::Label::builder()
             .label(&status_text)
-            .css_classes(["orbit-status"])
+            .css_classes(["pulsar-status"])
             .halign(gtk::Align::Start)
             .build();
         if network.autoconnect && !network.is_active {
-            status.add_css_class("orbit-status-accent");
+            status.add_css_class("pulsar-status-accent");
         }
         status_row.append(&status);
         
@@ -215,7 +215,7 @@ impl SavedNetworksList {
         
         let autoconnect_switch = gtk::Switch::builder()
             .active(network.autoconnect)
-            .css_classes(["orbit-toggle-switch"])
+            .css_classes(["pulsar-toggle-switch"])
             .halign(gtk::Align::Center)
             .valign(gtk::Align::Center)
             .tooltip_text("Toggle automatic connection for this network")
@@ -226,7 +226,7 @@ impl SavedNetworksList {
         // Forget Button
         let forget_btn = gtk::Button::builder()
             .label("Forget")
-            .css_classes(["orbit-button", "destructive", "flat"])
+            .css_classes(["pulsar-button", "destructive", "flat"])
             .valign(gtk::Align::Center)
             .margin_start(4)
             .build();

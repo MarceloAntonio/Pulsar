@@ -4,5 +4,5 @@ pub mod device_list;
 pub mod saved_networks_list;
 
 
-pub use window::OrbitWindow;
+pub use window::PulsarWindow;
 pub use device_list::DeviceAction;

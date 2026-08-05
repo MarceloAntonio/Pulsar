@@ -63,7 +63,7 @@ impl BluetoothManager {
         }
 
         let agent = crate::dbus::agent::BluetoothAgent::new(event_tx);
-        let agent_path = "/com/orbit/agent";
+        let agent_path = "/com/pulsar/agent";
         
         self.conn
             .object_server()

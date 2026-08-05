@@ -85,7 +85,7 @@ impl Config {
         let home = std::env::var("HOME").ok()?;
         Some(PathBuf::from(home)
             .join(".config")
-            .join("orbit")
+            .join("pulsar")
             .join("config.toml"))
     }
 }

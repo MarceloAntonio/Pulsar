@@ -1,14 +1,14 @@
-# Orbit - WiFi & Bluetooth Manager for Wayland
+# Pulsar - WiFi & Bluetooth Manager for Wayland
 
 A native network manager for Wayland using Rust, GTK4, and layer-shell with a high-contrast glassmorphism UI. Manage WiFi, Bluetooth devices, and wired Ethernet connections from a unified, animated panel.
 
 ## Interface Preview
 
 <p align="center">
-  <img src="screenshots/example.gif" width="300" alt="Orbit Preview">
+  <img src="screenshots/example.gif" width="300" alt="Pulsar Preview">
 </p>
 
-*The configuration shown in this GIF is available at: [MarceloAntonio/Dotfiles](https://github.com/MarceloAntonio/Dotfiles/tree/main/.config/orbit)*
+*The configuration shown in this GIF is available at: [MarceloAntonio/Dotfiles](https://github.com/MarceloAntonio/Dotfiles/tree/main/.config/pulsar)*
 
 ## Documentation
 - [Styling & Theming Guide](docs/STYLING.md) - Learn how to customize CSS, colors, and layout.
@@ -42,24 +42,24 @@ Then clone and build the project:
 git clone https://github.com/MarceloAntonio/wifi-bar.git
 cd wifi-bar
 cargo build --release
-sudo install -Dm755 target/release/orbit /usr/bin/orbit
+sudo install -Dm755 target/release/pulsar /usr/bin/pulsar
 ```
 
 ## Running and Activating (Daemon)
 
-Orbit consists of a background **daemon** (which handles connections, states, and DBus) and a **frontend** (which you trigger to show/hide).
+Pulsar consists of a background **daemon** (which handles connections, states, and DBus) and a **frontend** (which you trigger to show/hide).
 
 ### 1. Starting the Daemon Automatically
-To ensure Orbit is always running in the background and responds instantly, add it to your Wayland compositor's autostart.
+To ensure Pulsar is always running in the background and responds instantly, add it to your Wayland compositor's autostart.
 
 **For Hyprland** (in `~/.config/hypr/hyprland.conf`):
 ```conf
-exec-once = orbit daemon
+exec-once = pulsar daemon
 ```
 
 **For Sway** (in `~/.config/sway/config`):
 ```conf
-exec orbit daemon
+exec pulsar daemon
 ```
 
 ### 2. Controlling the Interface
@@ -67,28 +67,28 @@ Once the daemon is running, you can show, hide, or toggle specific tabs using th
 
 ```bash
 # Toggle the main window
-orbit toggle
+pulsar toggle
 
 # Open specifically the WiFi tab
-orbit toggle --tab wifi
+pulsar toggle --tab wifi
 
 # Open specifically the Bluetooth tab
-orbit toggle --tab bluetooth
+pulsar toggle --tab bluetooth
 
 # Output JSON status for Waybar modules
-orbit waybar-status
+pulsar waybar-status
 ```
 
 ## Waybar Integration
 
-Orbit is designed to look native in your bar. Add the following module to your Waybar `config.jsonc`:
+Pulsar is designed to look native in your bar. Add the following module to your Waybar `config.jsonc`:
 
 ```jsonc
-"custom/orbit": {
-    "exec": "orbit waybar-status",
+"custom/pulsar": {
+    "exec": "pulsar waybar-status",
     "return-type": "json",
     "interval": 10,
-    "on-click": "orbit toggle --tab wifi",
+    "on-click": "pulsar toggle --tab wifi",
     "format": "O"
 }
 ```

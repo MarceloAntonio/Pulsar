@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tokio::net::UnixListener;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
-const SOCKET_NAME: &str = "orbit.sock";
+const SOCKET_NAME: &str = "pulsar.sock";
 
 #[derive(Debug, Clone)]
 pub enum DaemonCommand {
@@ -68,7 +68,7 @@ fn get_socket_path() -> PathBuf {
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
             let user = std::env::var("USER").unwrap_or_else(|_| "user".to_string());
-            PathBuf::from(format!("/tmp/orbit-{}", user))
+            PathBuf::from(format!("/tmp/pulsar-{}", user))
         })
         .join(SOCKET_NAME);
     

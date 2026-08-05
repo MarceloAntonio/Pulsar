@@ -32,7 +32,7 @@ impl NetworkList {
 
         let search_box = gtk::Box::builder()
             .orientation(Orientation::Horizontal)
-            .css_classes(["orbit-search-container"])
+            .css_classes(["pulsar-search-container"])
             .margin_start(8)
             .margin_end(8)
             .margin_top(4)
@@ -41,14 +41,14 @@ impl NetworkList {
 
         let list_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
-            .css_classes(["orbit-list"])
+            .css_classes(["pulsar-list"])
             .focusable(true)
             .build();
 
         let search_entry = gtk::SearchEntry::builder()
             .placeholder_text("Search networks...")
             .hexpand(true)
-            .css_classes(["orbit-search-entry"])
+            .css_classes(["pulsar-search-entry"])
             .can_focus(true)
             .build();
         
@@ -80,7 +80,7 @@ impl NetworkList {
         container.append(&search_box);
 
         let power_switch = gtk::Switch::builder()
-            .css_classes(["orbit-toggle-switch"])
+            .css_classes(["pulsar-toggle-switch"])
             .active(false)
             .sensitive(false)
             .valign(gtk::Align::Center)
@@ -91,14 +91,14 @@ impl NetworkList {
             .hexpand(true)
             .hscrollbar_policy(gtk::PolicyType::Never)
             .min_content_height(280)
-            .css_classes(["orbit-scrolled"])
+            .css_classes(["pulsar-scrolled"])
             .build();
         
         scrolled.set_child(Some(&list_box));
         container.append(&scrolled);
         
         let footer = gtk::Box::builder()
-            .css_classes(["orbit-footer"])
+            .css_classes(["pulsar-footer"])
             .margin_top(8)
             .spacing(8)
             .build();
@@ -106,7 +106,7 @@ impl NetworkList {
         let scan_button = gtk::Button::builder()
             .label(" Scan")
             .icon_name("view-refresh-symbolic")
-            .css_classes(["orbit-button", "primary", "flat"])
+            .css_classes(["pulsar-button", "primary", "flat"])
             .hexpand(true)
             .tooltip_text("Scan for Networks")
             .build();
@@ -114,14 +114,14 @@ impl NetworkList {
         let hidden_button = gtk::Button::builder()
             .label(" Hidden")
             .icon_name("network-wireless-encrypted-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .tooltip_text("Hidden Network")
             .build();
         
         let saved_button = gtk::Button::builder()
             .label(" Saved")
             .icon_name("document-open-recent-symbolic")
-            .css_classes(["orbit-button", "flat"])
+            .css_classes(["pulsar-button", "flat"])
             .tooltip_text("Saved Networks")
             .build();
         
@@ -185,7 +185,7 @@ impl NetworkList {
     fn show_loading(&self) {
         let placeholder = gtk::Label::builder()
             .label("Loading networks...")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -193,7 +193,7 @@ impl NetworkList {
     fn show_placeholder(&self) {
         let placeholder = gtk::Label::builder()
             .label("Click 'Scan' to find networks")
-            .css_classes(["orbit-placeholder"])
+            .css_classes(["pulsar-placeholder"])
             .build();
         self.list_box.append(&placeholder);
     }
@@ -230,12 +230,12 @@ impl NetworkList {
             
             if active {
                 if is_connected {
-                    bar.add_css_class("orbit-signal-bar-active-accent");
+                    bar.add_css_class("pulsar-signal-bar-active-accent");
                 } else {
-                    bar.add_css_class("orbit-signal-bar-active");
+                    bar.add_css_class("pulsar-signal-bar-active");
                 }
             } else {
-                bar.add_css_class("orbit-signal-bar-inactive");
+                bar.add_css_class("pulsar-signal-bar-inactive");
             }
             
             container.append(&bar);
@@ -314,7 +314,7 @@ impl NetworkList {
         if filtered_networks.is_empty() && !query.is_empty() {
             let no_match = gtk::Label::builder()
                 .label(&format!("No networks matching '{}'", query))
-                .css_classes(["orbit-placeholder"])
+                .css_classes(["pulsar-placeholder"])
                 .build();
             self.list_box.append(&no_match);
             return;
@@ -330,7 +330,7 @@ impl NetworkList {
             
         let section_header = gtk::Label::builder()
             .label("ACTIVE CONNECTION")
-            .css_classes(["orbit-section-header"])
+            .css_classes(["pulsar-section-header"])
             .halign(gtk::Align::Start)
             .hexpand(true)
             .build();
@@ -359,7 +359,7 @@ impl NetworkList {
         if !available_networks.is_empty() {
             let section_header = gtk::Label::builder()
                 .label("AVAILABLE NETWORKS")
-                .css_classes(["orbit-section-header"])
+                .css_classes(["pulsar-section-header"])
                 .halign(gtk::Align::Start)
                 .build();
             self.list_box.append(&section_header);
@@ -375,7 +375,7 @@ impl NetworkList {
         let row = gtk::Box::builder()
             .orientation(Orientation::Horizontal)
             .spacing(12)
-            .css_classes(["orbit-network-row"])
+            .css_classes(["pulsar-network-row"])
             .focusable(true)
             .build();
         
@@ -394,7 +394,7 @@ impl NetworkList {
 
         if network.is_connected {
             let icon_container = gtk::Box::builder()
-                .css_classes(["orbit-icon-container"])
+                .css_classes(["pulsar-icon-container"])
                 .halign(gtk::Align::Center)
                 .valign(gtk::Align::Center)
                 .build();
@@ -405,7 +405,7 @@ impl NetworkList {
         } else {
             let signal_bars = Self::build_signal_bars(network.signal_strength, false);
             signal_bars.set_valign(gtk::Align::Center);
-            signal_bars.add_css_class("orbit-signal-bars-pad");
+            signal_bars.add_css_class("pulsar-signal-bars-pad");
             row.append(&signal_bars);
         }
         
@@ -418,7 +418,7 @@ impl NetworkList {
         
         let ssid = gtk::Label::builder()
             .label(&network.ssid)
-            .css_classes(["orbit-ssid"])
+            .css_classes(["pulsar-ssid"])
             .halign(gtk::Align::Start)
             .build();
         info_box.append(&ssid);
@@ -432,7 +432,7 @@ impl NetworkList {
         
         let status = gtk::Label::builder()
             .label(&status_text)
-            .css_classes(["orbit-status"])
+            .css_classes(["pulsar-status"])
             .halign(gtk::Align::Start)
             .build();
         info_box.append(&status);
@@ -457,7 +457,7 @@ impl NetworkList {
             let lock_icon = gtk::Image::builder()
                 .icon_name("system-lock-screen-symbolic")
                 .pixel_size(14)
-                .css_classes(["orbit-signal-icon"])
+                .css_classes(["pulsar-signal-icon"])
                 .tooltip_text("Secure Network")
                 .valign(gtk::Align::Center)
                 .build();
@@ -473,7 +473,7 @@ impl NetworkList {
             let working_box = gtk::Box::builder()
                 .orientation(Orientation::Horizontal)
                 .spacing(8)
-                .css_classes(["orbit-working-indicator"])
+                .css_classes(["pulsar-working-indicator"])
                 .build();
             
             let spinner = gtk::Spinner::builder()
@@ -483,7 +483,7 @@ impl NetworkList {
             
             let label = gtk::Label::builder()
                 .label(if is_connecting { "Connecting..." } else { "Disconnecting..." })
-                .css_classes(["orbit-status"])
+                .css_classes(["pulsar-status"])
                 .build();
             
             working_box.append(&spinner);
@@ -497,9 +497,9 @@ impl NetworkList {
             };
             
             let btn_classes = if network.is_connected { 
-                vec!["orbit-button", "flat"] 
+                vec!["pulsar-button", "flat"] 
             } else { 
-                vec!["orbit-button", "primary", "flat"] 
+                vec!["pulsar-button", "primary", "flat"] 
             };
             
             let action_btn = gtk::Button::builder()
@@ -522,7 +522,7 @@ impl NetworkList {
         if network.is_connected && !is_disconnecting {
             let details_btn = gtk::Button::builder()
                 .label("Details")
-                .css_classes(["orbit-button", "flat"])
+                .css_classes(["pulsar-button", "flat"])
                 .tooltip_text("Network Details")
                 .build();
             
