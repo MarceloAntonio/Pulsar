@@ -506,39 +506,7 @@ fn setup_events_receiver(
 
                                 // Trigger IP check
                                 log::info!("App: Fetching public IP info (Show)...");
-                                let client_res = reqwest::blocking::Client::builder()
-                                    .timeout(std::time::Duration::from_secs(5))
-                                    .user_agent("curl/8.5.0")
-                                    .build();
-                                
-                                if let Ok(client) = client_res {
-                                    let providers = [
-                                        "https://ifconfig.me/all.json",
-                                        "https://api.ipify.org?format=json",
-                                        "https://ipapi.co/json/"
-                                    ];
-
-                                    for url in providers {
-                                        if let Ok(response) = client.get(url).send() {
-                                            if let Ok(text) = response.text() {
-                                                if let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) {
-                                                    let ip = json["ip"].as_str() 
-                                                        .or_else(|| json["query"].as_str())
-                                                        .or_else(|| json["ip_addr"].as_str())
-                                                        .unwrap_or("Unknown").to_string();
-                                                    let isp = json["org"].as_str()
-                                                        .or_else(|| json["asn_org"].as_str())
-                                                        .or_else(|| json["isp"].as_str())
-                                                        .unwrap_or("Direct Connection").to_string();
-                                                    let is_secure = isp.to_lowercase().contains("vpn") || 
-                                                                   isp.to_lowercase().contains("hosting");
-                                                    let _ = tx_ref.send_blocking(AppEvent::PublicIpResult(ip, isp, current_dns.clone(), is_secure));
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                fetch_public_ip(tx_ref.clone(), current_dns.clone());
                             });
                             }
                         }
@@ -614,48 +582,7 @@ fn setup_events_receiver(
 
                                     // Trigger IP check in background with multi-provider fallback
                                     let tx_ip = tx_ref.clone();
-                                    std::thread::spawn(move || {
-                                        log::info!("App: Background IP check triggered (Toggle)");
-                                        let client_res = reqwest::blocking::Client::builder()
-                                            .timeout(std::time::Duration::from_secs(5))
-                                            .user_agent("curl/8.5.0")
-                                            .build();
-                                        
-                                        if let Ok(client) = client_res {
-                                            let providers = [
-                                                "https://ifconfig.me/all.json",
-                                                "https://api.ipify.org?format=json",
-                                                "https://ipapi.co/json/"
-                                            ];
-
-                                            for url in providers {
-                                                log::info!("App: Trying IP provider (Toggle): {}", url);
-                                                if let Ok(response) = client.get(url).send() {
-                                                    if let Ok(text) = response.text() {
-                                                        log::info!("App: IP response (Toggle): {}", text);
-                                                        if let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) {
-                                                            let ip = json["ip"].as_str() 
-                                                                .or_else(|| json["query"].as_str())
-                                                                .or_else(|| json["ip_addr"].as_str())
-                                                                .unwrap_or("Unknown").to_string();
-                                                                
-                                                            let isp = json["org"].as_str()
-                                                                .or_else(|| json["asn_org"].as_str())
-                                                                .or_else(|| json["isp"].as_str())
-                                                                .unwrap_or("Direct Connection").to_string();
-                                                                
-                                                            let is_secure = isp.to_lowercase().contains("vpn") || 
-                                                                           isp.to_lowercase().contains("hosting");
-
-                                                            log::info!("App: Found IP: {} via {}", ip, url);
-                                                            let _ = tx_ip.send_blocking(AppEvent::PublicIpResult(ip, isp, current_dns.clone(), is_secure));
-                                                            return;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
+                                    std::thread::spawn(move || fetch_public_ip(tx_ip, current_dns));
                                 });
                                 }
                             }
@@ -792,57 +719,7 @@ fn setup_ui_callbacks(
             
             // Fetch public IP info using a more reliable endpoint that avoids Cloudflare challenges
             log::info!("App: Fetching public IP info (Manual Click)...");
-            let client_res = reqwest::blocking::Client::builder()
-                .timeout(std::time::Duration::from_secs(5))
-                .user_agent("curl/8.5.0")
-                .build();
-            
-            if let Ok(client) = client_res {
-                // Try multiple providers for redundancy
-                let providers = [
-                    "https://ifconfig.me/all.json",
-                    "https://api.ipify.org?format=json",
-                    "https://ipapi.co/json/"
-                ];
-
-                for url in providers {
-                    log::info!("App: Trying IP provider (Manual Click): {}", url);
-                    match client.get(url).send() {
-                        Ok(response) => {
-                            if let Ok(text) = response.text() {
-                                log::info!("App: Received response from {}", url);
-                                if let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) {
-                                    let ip = json["ip"].as_str() 
-                                        .or_else(|| json["query"].as_str())
-                                        .or_else(|| json["ip_addr"].as_str())
-                                        .unwrap_or("Unknown").to_string();
-                                        
-                                    let isp = json["org"].as_str()
-                                        .or_else(|| json["asn_org"].as_str())
-                                        .or_else(|| json["isp"].as_str())
-                                        .unwrap_or("Direct Connection").to_string();
-                                        
-                                    let is_secure = isp.to_lowercase().contains("vpn") || 
-                                                   isp.to_lowercase().contains("hosting") ||
-                                                   url.contains("vpn");
-
-                                    log::info!("App: Detected IP: {}, ISP: {}", ip, isp);
-                                    let _ = tx.send_blocking(AppEvent::PublicIpResult(ip, isp, current_dns.clone(), is_secure));
-                                    return;
-                                }
-                            }
-                        }
-                        Err(e) => log::warn!("App: Provider {} failed (Manual Click): {}", url, e),
-                    }
-                }
-            }
-
-            let _ = tx.send_blocking(AppEvent::PublicIpResult(
-                "Unavailable".to_string(), 
-                "Check connection".to_string(), 
-                current_dns,
-                false
-            ));
+            fetch_public_ip(tx, current_dns);
         });
     });
 
@@ -1463,4 +1340,24 @@ fn setup_periodic_refresh(
         
         glib::ControlFlow::Continue
     });
+}
+
+fn fetch_public_ip(tx: async_channel::Sender<AppEvent>, current_dns: Vec<String>) {
+    log::info!("App: Fetching public IP info via curl...");
+    if let Ok(out) = std::process::Command::new("curl").args(&["-s", "-m", "5", "https://ipapi.co/json/"]).output() {
+        let text = String::from_utf8_lossy(&out.stdout);
+        let mut ip = "Unknown".to_string();
+        let mut isp = "Direct Connection".to_string();
+        for line in text.lines() {
+            if line.contains("\"ip\":") || line.contains("\"query\":") || line.contains("\"ip_addr\":") {
+                if let Some(val) = line.split('"').nth(3) { ip = val.to_string(); }
+            } else if line.contains("\"org\":") || line.contains("\"asn_org\":") || line.contains("\"isp\":") {
+                if let Some(val) = line.split('"').nth(3) { isp = val.to_string(); }
+            }
+        }
+        let is_secure = isp.to_lowercase().contains("vpn") || isp.to_lowercase().contains("hosting");
+        let _ = tx.send_blocking(AppEvent::PublicIpResult(ip, isp, current_dns, is_secure));
+    } else {
+        let _ = tx.send_blocking(AppEvent::PublicIpResult("Unavailable".to_string(), "Check connection".to_string(), current_dns, false));
+    }
 }
